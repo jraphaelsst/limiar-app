@@ -347,7 +347,11 @@ export const environmentLabel: Record<Environment, string> = { casa: 'Em casa', 
 
 export function formatDuration([min, max]: Activity['durationMin']): string {
   const fmt = (m: number) => (m >= 60 && m % 60 === 0 ? `${m / 60} h` : `${m} min`);
-  return min === max ? fmt(min) : max < 60 ? `${min}–${max} min` : `${fmt(min)}–${fmt(max)}`;
+  if (min === max) return fmt(min);
+  const hours = (m: number) => m >= 60 && m % 60 === 0;
+  if (hours(min) && hours(max)) return `${min / 60}–${max / 60} h`; // 60–120 → "1–2 h"
+  if (hours(max) && !hours(min)) return `${min} min–${fmt(max)}`; // 30–60 → "30 min–1 h"
+  return `${min}–${max} min`; // 30–90 → "30–90 min", never "30 min–90 min"
 }
 
 export function findActivity(id: string): Activity | undefined {
