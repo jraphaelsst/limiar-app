@@ -122,7 +122,7 @@ All three are open-licensed (SIL OFL) and bundled through `@expo-google-fonts/*`
 
 ## 6. Iconography
 
-- One line-icon set, 24 pt, ~1.5 pt stroke, rounded caps. **Pending choice of library.**
+- **Phosphor** (`phosphor-react-native`), 24 pt, `light` weight; `fill` weight only for the active tab / a selected state.
 - Filled variant only for the **active** tab and for an explicitly selected state. The mockup's mix of outline and filled icons in one list (conflict C12) is not carried over.
 - Saved items use **bookmark**, not heart (spec §18 "avoid excessive hearts"; mockup conflicts C1/C2).
 
@@ -132,16 +132,14 @@ All three are open-licensed (SIL OFL) and bundled through `@expo-google-fonts/*`
 - Placements: welcome hero (top) · content hero (full-bleed, under the status bar) · featured card ground · corner bleed on list pages.
 - Text never sits on busy collage. Use a paper area or an opaque control background.
 - Collage layers must come as **separate production assets**. The mockup is a flattened reference.
-- **Open (Mônica):** whether the welcome screen uses no photography (collage only).
+- **Welcome screen: no photography** (decided 2026-10-03, see `decisions.md`). Photography is allowed on content screens.
 
 ## 8. Open items
 
 | Item | Owner |
 |---|---|
-| Welcome screen without photography? | Mônica |
 | Vector SVG of the logo | Claude (needs `potrace`) or the brand's original file |
-| Icon library | to propose |
 | Collage assets, layered | designer / Mônica |
 | Dark mode | João / Mônica |
 | On-device check of the type scale | João (iPhone) |
-| Spec↔mockup conflicts C1–C12 | João / Mônica |
+| Spec↔mockup conflicts C1–C12 — spec wins by default; confirm with Mônica | João / Mônica |

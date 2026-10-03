@@ -10,5 +10,13 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Typography: **three families** — Cormorant Garamond (display) · Lora (body) · Inter (UI) | João | overrides the "single family" rule attributed to Mônica in the external DS draft |
 | 2026-10-03 | Background: **spec off-white `#F3F0EA`** (surface `#FAF7F1`, sand `#D8CBB8`) | João | chosen over mockup cream `#EFE5D7` — see comparison page |
 | 2026-10-03 | Logo: originals supplied by João (mark-only + full lockup); lockup source was rotated 90° and is corrected in the cut-out | João | sources in `brand-source/`, transparent PNGs in `assets/brand/`; vector SVG pending |
-| — | **Open:** welcome screen without photographs (collage only)? | **Mônica** | claim from external DS draft; awaiting her decision |
-| — | **Open:** spec↔mockup conflicts C1–C12 | João / Mônica | see `mockup-v0-decomposition.md` §6 |
+| 2026-10-03 | Welcome screen: **no photography** — the figure is rebuilt as cut-paper collage (silhouette, no realistic face); photography stays allowed on content screens | Claude, delegated by João (Mônica may override) | see rationale below |
+| 2026-10-03 | Spec↔mockup conflicts C1–C12: **spec wins by default** (spec §0: its rules prevail until human review); the mockup keeps authority over look, layout and components | Claude, delegated by João (Mônica may override) | concrete effects: tab "Salvos" + bookmark, no like counts, Home leads with "O que combina com hoje?" / "Me tira do sofá", no "planos" CTA until monetization is decided, copy rewritten without presuming loss |
+| 2026-10-03 | Icons: **Phosphor** (`phosphor-react-native`) — `light` weight by default, `fill` only for the active tab / selected state | Claude, delegated by João | only common set with a thin weight matching the logo stroke plus a filled weight |
+
+### Rationale — welcome screen without photography
+
+1. **Pluralism (spec §2).** One realistic woman on the first screen defines who the user "should" look like (age, hair, body, ethnicity). A cut-paper figure lets more women see themselves in it.
+2. **Provenance.** The mockup's woman is an AI-generated photo-realistic person. Shipping that as the brand's first impression raises authenticity questions; a commissioned collage avoids them and is licensable with a clear owner.
+3. **Identity coherence (spec §18).** The approved direction is *analog collage*. A photo is the one element on the welcome screen that breaks that language.
+4. **Cost of being wrong is low.** It's a swappable asset behind the `HeroCollage` component; if Mônica prefers a photo, nothing else changes.
