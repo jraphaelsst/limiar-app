@@ -41,3 +41,6 @@ example
 # generated native folders
 /ios
 /android
+
+# Reference design-system package from another agent — kept local, never committed
+Nos-no-Limiar-Design-System/
