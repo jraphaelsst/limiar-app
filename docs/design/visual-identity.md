@@ -106,6 +106,8 @@ All three are open-licensed (SIL OFL) and bundled through `@expo-google-fonts/*`
 
 - Sizes scale with the OS text-size setting; never disable font scaling (spec §17).
 - Cormorant has a small x-height, so its sizes are set ~15 % above a typical serif. **Must be checked on a real phone.**
+- **Numbers:** Cormorant defaults to old-style figures ("192" reads like "1g2"), so every Cormorant style forces lining figures (`fontVariant: ['lining-nums']`). Emergency numbers are set in Inter.
+- **Circumflex:** Cormorant draws â/ê with a tall, high circumflex. The logo's tagline ("contemporânea") shares this trait. **Open:** accept it as brand character or adjust.
 - Uppercase only for chips and the logo. No justified text. Headlines left-aligned (the logo is the only centered element).
 
 ## 5. Space, shape, motion

@@ -7,16 +7,23 @@ import type { TextStyle } from 'react-native';
 
 import { family } from './fonts';
 
-type Variant = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'lineHeight' | 'letterSpacing' | 'textTransform'>;
+type Variant = Pick<TextStyle, 'fontFamily' | 'fontSize' | 'lineHeight' | 'letterSpacing' | 'textTransform' | 'fontVariant'>;
+
+/**
+ * Cormorant defaults to old-style figures ("192" reads like "1g2"). Numbers must be
+ * unambiguous — emergency lines are shown in this app — so every Cormorant style
+ * forces lining figures.
+ */
+const lining: TextStyle['fontVariant'] = ['lining-nums'];
 
 export const typography = {
   // Cormorant Garamond — editorial voice
-  display: { fontFamily: family.display, fontSize: 38, lineHeight: 42 }, // welcome / hero
-  h1: { fontFamily: family.display, fontSize: 34, lineHeight: 38 }, // page title
-  h2: { fontFamily: family.display, fontSize: 28, lineHeight: 32 }, // greeting
-  h3: { fontFamily: family.display, fontSize: 23, lineHeight: 28 }, // section title
-  cardTitle: { fontFamily: family.displayStrong, fontSize: 20, lineHeight: 24 },
-  button: { fontFamily: family.displayStrong, fontSize: 20, lineHeight: 24 }, // mockup sets CTAs in serif
+  display: { fontFamily: family.display, fontSize: 38, lineHeight: 42, fontVariant: lining }, // welcome / hero
+  h1: { fontFamily: family.display, fontSize: 34, lineHeight: 38, fontVariant: lining }, // page title
+  h2: { fontFamily: family.display, fontSize: 28, lineHeight: 32, fontVariant: lining }, // greeting
+  h3: { fontFamily: family.display, fontSize: 23, lineHeight: 28, fontVariant: lining }, // section title
+  cardTitle: { fontFamily: family.displayStrong, fontSize: 20, lineHeight: 24, fontVariant: lining },
+  button: { fontFamily: family.displayStrong, fontSize: 20, lineHeight: 24, fontVariant: lining }, // mockup sets CTAs in serif
 
   // Lora — reading
   body: { fontFamily: family.body, fontSize: 17, lineHeight: 26 },
