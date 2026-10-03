@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, ListRow, Screen } from '@/components/ui';
 import { categoryLabel, findActivity, formatDuration, type Activity } from '@/data/activities';
-import { useSaved } from '@/state/saved';
+import { useSaved } from '@/state/app-state';
 import { space } from '@/theme';
 
 export default function Salvos() {

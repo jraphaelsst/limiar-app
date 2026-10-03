@@ -105,9 +105,9 @@ All three are open-licensed (SIL OFL) and bundled through `@expo-google-fonts/*`
 | `tabLabel` | Inter 500 | 12 / 16 | "Início" |
 
 - Sizes scale with the OS text-size setting; never disable font scaling (spec §17).
-- Cormorant has a small x-height, so its sizes are set ~15 % above a typical serif. **Must be checked on a real phone.**
+- Cormorant has a small x-height, so its sizes are set ~15 % above a typical serif. Approved on an iPhone on 2026-10-03.
 - **Numbers:** Cormorant defaults to old-style figures ("192" reads like "1g2"), so every Cormorant style forces lining figures (`fontVariant: ['lining-nums']`). Emergency numbers are set in Inter.
-- **Circumflex:** Cormorant draws â/ê with a tall, high circumflex. The logo's tagline ("contemporânea") shares this trait. **Open:** accept it as brand character or adjust.
+- **Accents:** Cormorant sets accents high and slightly right (á, ê, ó…). Accepted as brand character on 2026-10-03; the logo's tagline ("contemporânea") shares the trait.
 - Uppercase only for chips and the logo. No justified text. Headlines left-aligned (the logo is the only centered element).
 
 ## 5. Space, shape, motion
@@ -143,5 +143,4 @@ All three are open-licensed (SIL OFL) and bundled through `@expo-google-fonts/*`
 | Vector SVG of the logo | Claude (needs `potrace`) or the brand's original file |
 | Collage assets, layered | designer / Mônica |
 | Dark mode | João / Mônica |
-| On-device check of the type scale | João (iPhone) |
 | Spec↔mockup conflicts C1–C12 — spec wins by default; confirm with Mônica | João / Mônica |

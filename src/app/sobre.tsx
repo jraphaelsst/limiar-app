@@ -15,9 +15,9 @@ export default function Sobre() {
       </AppText>
       <View style={styles.block}>
         <AppText variant="h3">O que o app não é</AppText>
-        <CheckItem text="Não é psicoterapia nem atendimento clínico." />
-        <CheckItem text="Não faz diagnóstico nem avaliação psicológica." />
-        <CheckItem text="Não é serviço de emergência." />
+        <CheckItem mark="dot" text="Não é psicoterapia nem atendimento clínico." />
+        <CheckItem mark="dot" text="Não faz diagnóstico nem avaliação psicológica." />
+        <CheckItem mark="dot" text="Não é serviço de emergência." />
       </View>
       <AppText variant="bodySmall" color="textBody">
         Conteúdo editorial inspirado em estudos sobre vida adulta, relações e reflexão, com fontes revisadas.

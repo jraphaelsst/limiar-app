@@ -2,10 +2,10 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, BackBar, Button, Chip, IconButton, Icons, MetaRow, OptionPill, Screen } from '@/components/ui';
+import { AppText, BackBar, Button, CheckItem, Chip, IconButton, Icons, MetaRow, OptionPill, Screen } from '@/components/ui';
 import { categoryLabel, energyLabel, environmentLabel, formatDuration } from '@/data/activities';
 import { match, presetFor, questions, shuffle, type Choices, type Preset } from '@/lib/recommend';
-import { useSaved } from '@/state/saved';
+import { useSaved } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
 const relaxedLabel = { company: 'companhia', place: 'ambiente', energy: 'energia', time: 'tempo', category: 'tipo de atividade' } as const;
@@ -107,6 +107,12 @@ export default function Sofa() {
           { icon: Icons.MapPin, label: environmentLabel[a.environment] },
         ]}
       />
+      <View style={styles.block}>
+        <AppText variant="h3">O que precisa</AppText>
+        {a.materials.map((m) => (
+          <CheckItem key={m} text={m} />
+        ))}
+      </View>
       {items.length > 1 && (
         <AppText variant="caption" color="textSubtle">
           Ideia {(index % items.length) + 1} de {items.length}

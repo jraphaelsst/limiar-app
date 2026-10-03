@@ -68,7 +68,7 @@ export const questions: readonly Question[] = [
   },
 ];
 
-const timeCap: Record<TimeChoice, number> = { '5-10': 10, '15-30': 30, '60': 60, livre: Infinity };
+export const timeCap: Record<TimeChoice, number> = { '5-10': 10, '15-30': 30, '60': 60, livre: Infinity };
 const energyRank = { baixa: 0, normal: 1, alta: 2 } as const;
 
 /** What an intent pre-decides. Questions already answered by a preset are skipped. */

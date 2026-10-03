@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, BackBar, Button, CheckItem, Chip, IconButton, Icons, MetaRow, Screen, StepItem } from '@/components/ui';
 import { categoryLabel, energyLabel, environmentLabel, findActivity, formatDuration } from '@/data/activities';
-import { useSaved } from '@/state/saved';
+import { useSaved } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
 /** Activity card, full — spec §4.4: title · time · materials · 3–5 steps · variation · Concluir/Guardar/Outra/Sair. */

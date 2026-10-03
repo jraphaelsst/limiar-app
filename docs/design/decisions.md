@@ -14,6 +14,9 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Spec↔mockup conflicts C1–C12: **spec wins by default** (spec §0: its rules prevail until human review); the mockup keeps authority over look, layout and components | Claude, delegated by João (Mônica may override) | concrete effects: tab "Salvos" + bookmark, no like counts, Home leads with "O que combina com hoje?" / "Me tira do sofá", no "planos" CTA until monetization is decided, copy rewritten without presuming loss |
 | 2026-10-03 | Icons: **Phosphor** (`phosphor-react-native`) — `light` weight by default, `fill` only for the active tab / selected state | Claude, delegated by João | only common set with a thin weight matching the logo stroke plus a filled weight |
 
+| 2026-10-03 | Cormorant's high, offset accents (á é ê ó…) **accepted as brand character** — the logo's tagline shares the trait | João | seen on device (iPhone, Expo Go) |
+| 2026-10-03 | Type scale **approved on device** ("perfectly sized") — no longer provisional | João | Perfil → Tipografia on iPhone |
+
 ### Rationale — welcome screen without photography
 
 1. **Pluralism (spec §2).** One realistic woman on the first screen defines who the user "should" look like (age, hair, body, ethnicity). A cut-paper figure lets more women see themselves in it.

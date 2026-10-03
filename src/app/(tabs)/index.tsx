@@ -4,18 +4,32 @@ import { StyleSheet, View } from 'react-native';
 import { ActivityCard } from '@/components/ActivityCard';
 import { SofaCard } from '@/components/SofaCard';
 import { AppText, ListRow, Logo, Screen, SectionHeader } from '@/components/ui';
-import { activities } from '@/data/activities';
+import { activities, type Activity } from '@/data/activities';
 import { intents } from '@/data/intents';
+import { timeCap } from '@/lib/recommend';
+import { interestCategories, useAppState, type Prefs } from '@/state/app-state';
 import { space } from '@/theme';
 
-/** Two short, low-energy ideas so the Home always offers something to do right away. */
-const today = activities.filter((a) => a.energy === 'baixa' && a.durationMin[1] <= 15).slice(0, 2);
+/**
+ * Two ideas for today, shaped by what she chose in onboarding (interests →
+ * categories, available time → duration). Falls back to short, low-energy
+ * ideas when nothing was chosen or nothing matches.
+ */
+function pickToday(prefs: Prefs | undefined): readonly Activity[] {
+  const cats = interestCategories(prefs);
+  const cap = prefs?.availability ? timeCap[prefs.availability] : Infinity;
+  const fits = activities.filter((a) => a.durationMin[0] <= cap && (cats.size === 0 || cats.has(a.category)));
+  const fallback = activities.filter((a) => a.energy === 'baixa' && a.durationMin[1] <= 15);
+  return (fits.length >= 2 ? fits : [...fits, ...fallback.filter((a) => !fits.includes(a))]).slice(0, 2);
+}
 
 /**
  * Home — spec §4.2: entry by intention, never a mood question. Leads with
  * "Me tira do sofá" (spec §4.3). No search (not in spec; conflict C9).
  */
 export default function Home() {
+  const { prefs } = useAppState();
+  const today = pickToday(prefs);
   return (
     <Screen edges={['top']}>
       <View style={styles.header}>

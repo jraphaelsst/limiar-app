@@ -4,13 +4,13 @@ import { color, radius, size, space } from '@/theme';
 
 import { AppText } from './AppText';
 
-type Props = { label: string; selected: boolean; onPress: () => void };
+type Props = { label: string; selected: boolean; onPress: () => void; multiple?: boolean };
 
-/** One answer in a single-choice question ("Quanto tempo cabe agora?"). */
-export function OptionPill({ label, selected, onPress }: Props) {
+/** One answer in a choice question: single-choice (radio) by default, `multiple` for checkbox lists. */
+export function OptionPill({ label, selected, onPress, multiple = false }: Props) {
   return (
     <Pressable
-      accessibilityRole="radio"
+      accessibilityRole={multiple ? 'checkbox' : 'radio'}
       accessibilityState={{ checked: selected }}
       onPress={onPress}
       style={({ pressed }) => [

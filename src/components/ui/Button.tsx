@@ -35,7 +35,8 @@ export function Button({ label, variant = 'primary', arrow = false, fullWidth = 
         fullWidth && styles.full,
         pressed && variant === 'primary' && { backgroundColor: color.primaryPressed },
         pressed && variant !== 'primary' && { opacity: 0.7 },
-        disabled && styles.disabled,
+        disabled && variant !== 'quiet' && styles.disabled,
+        disabled && variant === 'quiet' && { opacity: 0.5 },
       ]}>
       <View style={styles.row}>
         <AppText
@@ -43,7 +44,7 @@ export function Button({ label, variant = 'primary', arrow = false, fullWidth = 
           style={[{ color: disabled ? color.textBody : fg }, variant === 'quiet' && styles.underline]}>
           {label}
         </AppText>
-        {arrow && <ArrowRight size={20} color={fg} weight="regular" />}
+        {arrow && <ArrowRight size={20} color={disabled ? color.textBody : fg} weight="regular" />}
       </View>
     </Pressable>
   );
