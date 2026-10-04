@@ -33,6 +33,52 @@
     "agentes": [
       "nos-no-limiar",
       "mobile-dev"
+    ],
+    "nao_segredos": [
+      {
+        "impressao": "f8834cf8bf90b4af",
+        "nota": "id público do link do Decision Board (claude.ai/artifact) — não é credencial"
+      },
+      {
+        "impressao": "7793113da8711c3f",
+        "nota": "caminho de pasta do repositório noctusai"
+      },
+      {
+        "impressao": "94515fdde12d743e",
+        "nota": "nome de opção do app.json (Expo)"
+      },
+      {
+        "impressao": "c375fc614e69e14c",
+        "nota": "texto da spec: 'Tempo/energia/ambiente/companhia'"
+      },
+      {
+        "impressao": "966c9a72214a7d1b",
+        "nota": "trecho de URL da LGPD (planalto.gov.br) citada na spec"
+      },
+      {
+        "impressao": "eab1f241b151d0a2",
+        "nota": "trecho de URL do CFP citada na spec"
+      },
+      {
+        "impressao": "f6d60c52a3135ce6",
+        "nota": "trecho de URL da OMS (who.int) citada na spec"
+      },
+      {
+        "impressao": "2e65b3b05c554bad",
+        "nota": "trecho de URL de artigo (revistas.usp.br) citado na spec"
+      },
+      {
+        "impressao": "33442f33d0b6c2ce",
+        "nota": "caminho de import de ícone do phosphor-react-native"
+      },
+      {
+        "impressao": "d8a5de3979c79fec",
+        "nota": "nome de API do React Native (AccessibilityInfo)"
+      },
+      {
+        "impressao": "04f6b064f3b5c18e",
+        "nota": "nome de família tipográfica (Cormorant Garamond)"
+      }
     ]
   }
 }
