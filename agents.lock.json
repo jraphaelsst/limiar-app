@@ -3,13 +3,13 @@
   "agents": [
     {
       "key": "mobile-dev",
-      "versao": "0.2.1",
-      "sha": "9591dd1e757d6933721285e7b190ecd9444449ab3be03fdb4c8b32ee7861a137"
+      "versao": "0.2.2",
+      "sha": "3627e839544bcb9952888eaf90d3babe8f469d4c0ef895ef3b5d833f9d44c3c9"
     },
     {
       "key": "nos-no-limiar",
-      "versao": "0.2.2",
-      "sha": "9af0790b0ae25a14a1a827a3a7bfcb81c7096de01944c7dcff3e0c3445f81f05"
+      "versao": "0.2.4",
+      "sha": "95c783a15896d6bd01fb704b98f26fb31d2c6d8174018fce17145ead34c7dfc9"
     }
   ],
   "project": {

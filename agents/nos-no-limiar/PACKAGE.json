@@ -1,7 +1,7 @@
 {
   "key": "nos-no-limiar",
-  "versao": "0.2.2",
-  "sha": "9af0790b0ae25a14a1a827a3a7bfcb81c7096de01944c7dcff3e0c3445f81f05",
-  "compiled_hash": "sha256:0155850ccca71dd9823c374d2c2c7340fd44d3724d7ec83f284e92bc556fe3eb",
-  "built_at": "2026-10-04T01:48:03Z"
+  "versao": "0.2.4",
+  "sha": "95c783a15896d6bd01fb704b98f26fb31d2c6d8174018fce17145ead34c7dfc9",
+  "compiled_hash": "sha256:b7e91657e1e2aa0c34dc8997d90ef12504c77509a5803036603c536f98c1eb72",
+  "built_at": "2026-10-04T03:59:23Z"
 }
