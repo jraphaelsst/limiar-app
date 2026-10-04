@@ -30,6 +30,7 @@ describe('activity catalog invariants', () => {
     expect(a.reviewStatus).toBe('rascunho');
     expect(a.durationMin[0]).toBeLessThanOrEqual(a.durationMin[1]);
     expect(a.durationMin[0]).toBeGreaterThan(0);
+    if (a.variation !== undefined) expect(a.variation.trim()).not.toBe('');
   });
 
   test('findActivity resolves every id and returns undefined for unknown', () => {

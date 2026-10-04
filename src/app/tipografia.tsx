@@ -13,6 +13,7 @@ const samples: Record<TypographyVariant, string> = {
   button: 'Começar agora',
   body: 'Desenhar a planta e marcar três lugares que guardam lembranças boas ou curiosas.',
   bodySmall: 'Escolher uma rua ou praça pouco conhecida e caminhar ou observar.',
+  bodyLarge: 'Marque três lugares que guardam lembranças boas ou curiosas.',
   label: 'Já tenho uma conta',
   input: 'Buscar atividades',
   caption: '10–15 min · papel e caneta',
