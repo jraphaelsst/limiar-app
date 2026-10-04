@@ -74,25 +74,30 @@ houver analytics, só contagem agregada por nível + versão do classificador, n
 3. **Suíte de regressão** roda no CI a cada mudança de regra, prompt ou modelo (§21); a taxa de falso positivo é
    medida e publicada no relatório do teste.
 
-## 6. Back-end de IA (onda 3) — recomendação
+## 6. Back-end de IA (onda 3) e admin — revisado após parecer do agente `architect` (2026-10-04)
 
-**Recomendado:** serviço próprio e sem estado sobre a seed da NoctusAI (FastAPI), publicado pelo mesmo pipeline
-dos outros produtos. Reaproveita: limitador de taxa da seed, logs que nunca gravam corpo de requisição, adaptador
-Anthropic da seed (API comercial). Fluxo: app → `POST /v1/reflexao` (tema + texto; sem conta, sem id de usuária) →
-triagem determinística + classificador → recuperação **antes** da geração, só na base editorial aprovada (arquivos
-versionados no git, com fonte/autor/data/revisor — §7.3) → geração com o prompt-base §7.2 → pós-filtro → resposta de
-80–130 palavras + no máximo 2 caminhos. Nada é persistido; nenhum texto em log.
+**Sem produto novo.** O que um produto `limiar` teria já existe no produto `agents` da NoctusAI: biblioteca de
+conhecimento curada com revisões e busca (`stores/studio_knowledge.py`), versões de agente rascunho → publicada com
+`published_by` e portão de avaliação. Criar outro produto copiaria isso (bifurcação estrutural).
 
-**Descartado:** usar o Agent Studio como motor — ele roda sessões do Claude Code no plano pessoal (não serve a
-tráfego público por termos e capacidade), a recuperação é escolhida pelo modelo (a spec exige recuperação antes da
-geração) e não há contrato/DPA nesse caminho (§12).
-
+- **(a) Pergunta aberta:** rota pública **sem estado** dentro do `agents` — chama o adaptador Anthropic da seed
+  diretamente (não o runtime de sessões do Claude Code, descartado: plano pessoal, sem DPA, recuperação escolhida
+  pelo modelo). Fluxo: triagem determinística + classificador semântico → recuperação **antes** da geração, só na
+  coleção publicada → prompt-base §7.2 → pós-filtro → 80–130 palavras. Limite por IP (`client_ip_key` da seed).
+  Fica fora da auditoria e do log de requisição, **provado por teste**; rotas de admin com teste estrito `== 401`.
+  Construída com provedor *Fake*. Ir ao ar exige H1–H4 **e** a decisão do dono (nova superfície pública).
+- **(b) Admin editorial:** a máquina de estados da spec §22 (rascunho → revisão editorial → revisão de
+  segurança/fonte → publicado → arquivado) **não existe** em lugar nenhum e já é a 3ª ocorrência de "rascunho →
+  publicar" na plataforma ⇒ deve nascer compartilhada na seed, não copiada. **MFA para admin não existe** no core;
+  a spec §11 a exige ⇒ é capacidade do core/SSO para a frota inteira. Ambos dependem de decisão do João (H6).
+- **Enquanto (b) não existe:** atividades e base de conhecimento ficam no git (este repositório), revisadas por PR
+  com `reviewStatus` por item; o app continua com o catálogo embutido.
 ## 7. Decisões
 
 **Tomadas por Claude, delegadas por João** (registradas em `docs/design/decisions.md`; Mônica/João podem reabrir):
 - D1. Fase 1 **sem conta** (modo visitante) — spec §10.1 "considerar modo sem conta"; minimização.
 - D2. Texto salvo **só no aparelho** na Fase 1 — elimina o maior risco LGPD (texto sensível em servidor).
-- D3. Back-end de IA = serviço próprio sem estado sobre a seed (§6 acima); construído com *Fake* até H1–H4.
+- D3. Back-end de IA = rota pública sem estado no produto `agents` (§6); construída com *Fake* até H1–H4. Sem produto novo.
 
 **Precisam de decisão humana antes de a pergunta aberta com IA ir ao ar** (spec §24 — não inventamos):
 - H1. Provedor de IA, contrato/DPA, retenção zero e região de processamento (§12; transferência internacional —
@@ -100,6 +105,7 @@ geração) e não há contrato/DPA nesse caminho (§12).
 - H2. Controlador de dados e canal de privacidade (§24.6).
 - H3. Parecer jurídico: LGPD, termos, publicidade, fronteira bem-estar × serviço psicológico (§9, §24.8).
 - H4. Quem faz revisão editorial/científica e aprova a base de conhecimento e as atividades (§22, §24.7).
+- H6. Admin editorial + MFA de admin como capacidades da plataforma (seed/core, frota inteira) — §6 (b).
 - H5. Monetização no lançamento (§16, §24.3) e restrição ao Brasil (§24.10) — não bloqueiam o build.
 
 ## 8. Critérios de aceite (spec §20) — como serão verificados
