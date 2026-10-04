@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, BackBar, Button, OptionPill, Screen } from '@/components/ui';
+import { announce } from '@/lib/a11y';
 import type { TimeChoice } from '@/lib/recommend';
 import {
   interestHint,
@@ -15,6 +16,10 @@ import {
   type InterestId,
 } from '@/state/app-state';
 import { space } from '@/theme';
+
+const unsavedText = 'Suas mudanças ainda não foram salvas.';
+const failedText = 'Não foi possível salvar neste aparelho. Tente de novo.';
+const timeQuestion = 'Quanto tempo livre costuma aparecer?';
 
 /**
  * Spec screen 16 — change the onboarding choices later (spec §6: only what she
@@ -39,7 +44,11 @@ export default function Preferencias() {
     count !== (prefs?.interests.length ?? 0) ||
     interests.some((id) => !prefs?.interests.includes(id));
 
-  usePreventRemove(changed && !saved, ({ data }) => setPendingLeave(data.action));
+  // Shown whatever else is on screen (including after a failed save): a leave attempt always gets an answer.
+  usePreventRemove(changed && !saved, ({ data }) => {
+    setPendingLeave(data.action);
+    announce(unsavedText);
+  });
 
   // Leave only after the re-render that lifts the guard above (prefs now equal the screen).
   useEffect(() => {
@@ -62,6 +71,7 @@ export default function Preferencias() {
   const submit = async () => {
     setSaving(true);
     setFailed(false);
+    setPendingLeave(null);
     try {
       await updatePrefs({ interests, availability });
       setSaved(true);
@@ -69,6 +79,7 @@ export default function Preferencias() {
       console.error('[preferencias] could not save preferences', e);
       setFailed(true);
       setSaving(false);
+      announce(failedText);
     }
   };
 
@@ -77,9 +88,9 @@ export default function Preferencias() {
       edges={['top', 'bottom']}
       footer={
         <View style={styles.actions}>
-          {pendingLeave && !failed && (
+          {pendingLeave && (
             <View style={styles.confirm} accessibilityLiveRegion="polite">
-              <AppText variant="label">Suas mudanças ainda não foram salvas.</AppText>
+              <AppText variant="label">{unsavedText}</AppText>
               <View style={styles.row}>
                 <Button variant="quiet" label="Sair sem salvar" onPress={() => navigation.dispatch(pendingLeave)} />
                 <Button variant="quiet" label="Continuar aqui" onPress={() => setPendingLeave(null)} />
@@ -88,7 +99,7 @@ export default function Preferencias() {
           )}
           {failed && (
             <AppText variant="label" color="error" accessibilityLiveRegion="assertive">
-              Não foi possível salvar neste aparelho. Tente de novo.
+              {failedText}
             </AppText>
           )}
           <Button label="Salvar" fullWidth disabled={!valid || !changed || saving} onPress={submit} />
@@ -120,8 +131,8 @@ export default function Preferencias() {
       </View>
 
       <View style={styles.block}>
-        <AppText variant="h3">Quanto tempo livre costuma aparecer?</AppText>
-        <View style={styles.options} accessibilityRole="radiogroup">
+        <AppText variant="h3">{timeQuestion}</AppText>
+        <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel={timeQuestion}>
           {timeOptions.map((o) => (
             <OptionPill key={o.value} label={o.label} selected={availability === o.value} onPress={() => pickTime(o.value)} />
           ))}

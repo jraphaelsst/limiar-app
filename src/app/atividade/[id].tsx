@@ -4,7 +4,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText, BackBar, Button, CheckItem, Chip, IconButton, Icons, MetaRow, Screen, StepItem } from '@/components/ui';
 import { categoryLabel, energyLabel, environmentLabel, findActivity, formatDuration } from '@/data/activities';
-import { useSaved } from '@/state/app-state';
+import { announce } from '@/lib/a11y';
+import { saveFailedText, useSaved } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
 /** Activity card, full — spec §4.4: title · time · materials · 3–5 steps · variation · Concluir/Guardar/Outra/Sair. */
@@ -13,6 +14,7 @@ export default function ActivityScreen() {
   const a = findActivity(id);
   const { isSaved, toggle } = useSaved();
   const [finished, setFinished] = useState(false);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   if (!a) {
     return (
@@ -28,6 +30,14 @@ export default function ActivityScreen() {
   }
 
   const saved = isSaved(a.activityId);
+  const toggleSaved = () => {
+    setSaveFailed(false);
+    toggle(a.activityId).catch((e) => {
+      console.error('[storage] could not update saved items', e);
+      setSaveFailed(true);
+      announce(saveFailedText);
+    });
+  };
   return (
     <Screen
       edges={['top', 'bottom']}
@@ -44,7 +54,12 @@ export default function ActivityScreen() {
           </View>
         )
       }>
-      <BackBar right={<IconButton icon={Icons.Bookmark} label={saved ? 'Remover dos salvos' : 'Guardar'} selected={saved} onPress={() => toggle(a.activityId)} />} />
+      <BackBar right={<IconButton icon={Icons.Bookmark} label={saved ? 'Remover dos salvos' : 'Guardar'} selected={saved} onPress={toggleSaved} />} />
+      {saveFailed && (
+        <AppText variant="label" color="error" accessibilityLiveRegion="assertive">
+          {saveFailedText}
+        </AppText>
+      )}
 
       <View style={styles.block}>
         <Chip label={categoryLabel[a.category]} tone="sand" />

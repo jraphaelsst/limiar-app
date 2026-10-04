@@ -1,15 +1,22 @@
 import { router } from 'expo-router';
-import { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, type Text } from 'react-native';
 
 import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, CheckItem, OptionPill, Screen } from '@/components/ui';
 import { directionLabel, gameAPattern, pairs, patternSentence, type GameAChoices } from '@/data/games';
+import { announce, useFocusOnChange } from '@/lib/a11y';
 import { useAppState } from '@/state/app-state';
-import { useStepBack } from '@/state/use-step-back';
+import { usePreviousStepOnBack } from '@/state/use-previous-step-on-back';
 import { space } from '@/theme';
 
 type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
+const saveText = {
+  saved: 'Guardado só neste aparelho. Dá para apagar na lista de jogos.',
+  error: 'Não foi possível guardar agora. Tente de novo.',
+  idle: 'Este resultado some quando você sair, a menos que escolha guardar.',
+} as const;
 
 /**
  * Jogo A — "Ainda gosto disso?" (spec §4.5, screen 11). One pair per screen,
@@ -18,14 +25,25 @@ type SaveState = 'idle' | 'saving' | 'saved' | 'error';
  */
 export default function AindaGosto() {
   const { saveGameAResult } = useAppState();
-  const [step, setStep] = useState(-1); // -1 intro · 0..n-1 rounds · n result
+  const [step, setStepState] = useState(-1); // -1 intro · 0..n-1 rounds · n result
   const [choices, setChoices] = useState<GameAChoices>({});
   const [saveState, setSaveState] = useState<SaveState>('idle');
+  // The step a tap belongs to: a second tap on the same round (before the re-render) is ignored
+  // instead of recording an answer for a round she never saw.
+  const stepRef = useRef(-1);
+  const setStep = useCallback((n: number) => {
+    stepRef.current = n;
+    setStepState(n);
+  }, []);
+  const h1 = useRef<Text>(null);
 
   const total = pairs.length;
   const inRounds = step >= 0 && step < total;
-  const goBack = useCallback(() => setStep((s) => s - 1), []);
-  useStepBack(inRounds, goBack);
+  const goBack = useCallback(() => setStep(stepRef.current - 1), [setStep]);
+  // Same rule as Me tira do sofá (decision nnl-hardware-back): during rounds, back goes to the
+  // previous round. At round 1, on the intro and on the result, back leaves normally.
+  usePreviousStepOnBack(inRounds && step > 0, goBack);
+  useFocusOnChange(h1, step, inRounds ? `Rodada ${step + 1} de ${total}` : undefined);
 
   const result = useMemo(() => (step >= total ? gameAPattern(choices) : null), [step, total, choices]);
 
@@ -40,7 +58,7 @@ export default function AindaGosto() {
       <Screen edges={['top', 'bottom']} footer={<Button label="Começar" arrow fullWidth onPress={() => setStep(0)} />}>
         <BackBar right={<HelpButton />} />
         <View style={styles.block}>
-          <AppText variant="h1">Ainda gosto disso?</AppText>
+          <AppText ref={h1} variant="h1">Ainda gosto disso?</AppText>
           <AppText variant="body" color="textBody">
             {total} rodadas rápidas, cada uma com duas opções. Escolha a que combina mais com você hoje, ou pule.
           </AppText>
@@ -55,8 +73,9 @@ export default function AindaGosto() {
   if (inRounds) {
     const p = pairs[step];
     const answer = (value: string | null) => {
+      if (stepRef.current !== step) return; // stale double-tap
       setChoices((c) => ({ ...c, [p.id]: value }));
-      setStep((s) => s + 1);
+      setStep(step + 1);
     };
     return (
       <Screen key={`round-${step}`} edges={['top', 'bottom']}>
@@ -65,7 +84,9 @@ export default function AindaGosto() {
           <AppText variant="caption" color="textSubtle" accessibilityLiveRegion="polite">
             Rodada {step + 1} de {total}
           </AppText>
-          <AppText variant="h1">Qual combina mais com você hoje?</AppText>
+          <AppText ref={h1} variant="h1">
+            Qual combina mais com você hoje?
+          </AppText>
         </View>
         <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel="Qual combina mais com você hoje?">
           {p.options.map((o) => (
@@ -85,10 +106,14 @@ export default function AindaGosto() {
   const save = () => {
     setSaveState('saving');
     saveGameAResult(choices)
-      .then(() => setSaveState('saved'))
+      .then(() => {
+        setSaveState('saved');
+        announce(saveText.saved);
+      })
       .catch((e) => {
         console.error('[storage] could not save the game result', e);
         setSaveState('error');
+        announce(saveText.error);
       });
   };
 
@@ -119,7 +144,9 @@ export default function AindaGosto() {
       }>
       <BackBar right={<HelpButton />} />
       <View style={styles.block}>
-        <AppText variant="h1">O que apareceu hoje</AppText>
+        <AppText ref={h1} variant="h1">
+          O que apareceu hoje
+        </AppText>
         <AppText variant="body" color="textBody">
           {nothingPicked
             ? 'Todas as rodadas foram puladas. Dá para jogar de novo quando quiser, ou procurar uma atividade agora.'
@@ -137,16 +164,12 @@ export default function AindaGosto() {
         </View>
       )}
       {!nothingPicked && (
-      <AppText
-        variant="caption"
-        color={saveState === 'error' ? 'error' : 'textSubtle'}
-        accessibilityLiveRegion={saveState === 'error' ? 'assertive' : 'polite'}>
-        {saveState === 'saved'
-          ? 'Guardado só neste aparelho. Dá para apagar na lista de jogos.'
-          : saveState === 'error'
-            ? 'Não foi possível guardar agora. Tente de novo.'
-            : 'Este resultado some quando você sair, a menos que escolha guardar.'}
-      </AppText>
+        <AppText
+          variant="caption"
+          color={saveState === 'error' ? 'error' : 'textSubtle'}
+          accessibilityLiveRegion={saveState === 'error' ? 'assertive' : 'polite'}>
+          {saveText[saveState === 'saving' ? 'idle' : saveState]}
+        </AppText>
       )}
     </Screen>
   );

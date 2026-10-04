@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Platform, Share, StyleSheet, View } from 'react-native';
 
 import { AppText, BackBar, Button, CheckItem, Screen } from '@/components/ui';
+import { announce } from '@/lib/a11y';
 import { buildExportText, useAppState } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
@@ -30,30 +31,44 @@ export default function Privacidade() {
   const { prefs, savedIds, gameAResults } = useAppState();
   const [status, setStatus] = useState<ExportStatus>('idle');
   const [text, setText] = useState<string | null>(null);
+  // One share sheet at a time: the button is disabled while it is open, and the ref
+  // also catches a second tap that lands before that re-render.
+  const [sharing, setSharing] = useState(false);
+  const sharingRef = useRef(false);
+
+  const show = (next: ExportStatus) => {
+    setStatus(next);
+    if (next !== 'idle') announce(statusText[next]);
+  };
 
   const exportData = async () => {
-    if (!prefs) return;
+    if (!prefs || sharingRef.current) return;
     const message = buildExportText(prefs, savedIds, new Date(), gameAResults);
     setText(null);
     if (!canShare()) {
       setText(message);
-      setStatus('unsupported');
+      show('unsupported');
       return;
     }
+    sharingRef.current = true;
+    setSharing(true);
     try {
       // Nothing leaves the device unless she picks a target in the system sheet.
       const result = await Share.share({ title: 'Meus dados do Nós no Limiar', message });
-      if (result?.action === Share.dismissedAction) setStatus('cancelled');
+      if (result?.action === Share.dismissedAction) show('cancelled');
       // Android always reports sharedAction, even when the sheet is closed: say nothing rather than claim a send.
-      else setStatus(Platform.OS === 'android' ? 'idle' : 'shared');
+      else show(Platform.OS === 'android' ? 'idle' : 'shared');
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') {
-        setStatus('cancelled'); // web: navigator.share rejects with AbortError when the sheet is dismissed
+        show('cancelled'); // web: navigator.share rejects with AbortError when the sheet is dismissed
         return;
       }
       console.error('[privacidade] export share failed', e);
       setText(message);
-      setStatus('failed');
+      show('failed');
+    } finally {
+      sharingRef.current = false;
+      setSharing(false);
     }
   };
 
@@ -93,7 +108,7 @@ export default function Privacidade() {
             enviada fica com quem a recebe: apagar os dados aqui não apaga essa cópia.
           </AppText>
           <View style={styles.actions}>
-            <Button label="Exportar meus dados" onPress={exportData} />
+            <Button label="Exportar meus dados" disabled={sharing} onPress={exportData} />
             {text === null && <Button variant="quiet" label="Ver o texto aqui" onPress={showHere} />}
           </View>
           {status !== 'idle' && (

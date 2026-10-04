@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useRef, useState } from 'react';
+import { StyleSheet, View, type Text } from 'react-native';
 
 import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, CheckItem, Chip, ListRow, OptionPill, Screen } from '@/components/ui';
 import { reflectionQuestion, roleCards, stances, type Stance } from '@/data/games';
-import { useStepBack } from '@/state/use-step-back';
+import { useFocusOnChange } from '@/lib/a11y';
+import { usePreviousStepOnBack } from '@/state/use-previous-step-on-back';
 import { color, radius, space } from '@/theme';
 
 /**
@@ -16,16 +17,26 @@ import { color, radius, space } from '@/theme';
  * (spec §6): the answers live only in this screen's memory.
  */
 export default function IssoAindaEMeu() {
-  const [step, setStep] = useState(-1); // -1 intro · 0..n-1 cards · n summary
+  const [step, setStepState] = useState(-1); // -1 intro · 0..n-1 cards · n summary
   const [answers, setAnswers] = useState<Readonly<Record<string, Stance | null>>>({});
   const [reflectOn, setReflectOn] = useState<string | null>(null);
+  // The step a tap belongs to: a second tap on the same card (before the re-render) is ignored.
+  const stepRef = useRef(-1);
+  const setStep = useCallback((n: number) => {
+    stepRef.current = n;
+    setStepState(n);
+  }, []);
+  const h1 = useRef<Text>(null);
 
   const total = roleCards.length;
   const inCards = step >= 0 && step < total;
-  const goBack = useCallback(() => setStep((s) => s - 1), []);
+  const goBack = useCallback(() => setStep(stepRef.current - 1), [setStep]);
   const closeReflection = useCallback(() => setReflectOn(null), []);
-  useStepBack(inCards, goBack);
-  useStepBack(reflectOn !== null, closeReflection);
+  // Same rule as Me tira do sofá (decision nnl-hardware-back), on every back path: with the
+  // reflection open, back closes it; during cards (after the first), back is the previous card.
+  // On the first card, the intro and the summary, back leaves normally.
+  usePreviousStepOnBack(reflectOn !== null || (inCards && step > 0), () => (reflectOn !== null ? closeReflection() : goBack()));
+  useFocusOnChange(h1, reflectOn ? `reflect-${reflectOn}` : step, inCards ? `Cartão ${step + 1} de ${total}` : undefined);
 
   const restart = () => {
     setAnswers({});
@@ -39,7 +50,9 @@ export default function IssoAindaEMeu() {
       <Screen edges={['top', 'bottom']} footer={<Button label="Começar" arrow fullWidth onPress={() => setStep(0)} />}>
         <BackBar right={<HelpButton />} />
         <View style={styles.block}>
-          <AppText variant="h1">Isso ainda é meu?</AppText>
+          <AppText ref={h1} variant="h1">
+            Isso ainda é meu?
+          </AppText>
           <AppText variant="body" color="textBody">
             {total} cartões com hábitos e papéis do dia a dia. Para cada um, escolha o que descreve melhor como ele está hoje. O
             que não faz parte da sua rotina pode ser pulado.
@@ -55,8 +68,9 @@ export default function IssoAindaEMeu() {
   if (inCards) {
     const c = roleCards[step];
     const answer = (value: Stance | null) => {
+      if (stepRef.current !== step) return; // stale double-tap
       setAnswers((a) => ({ ...a, [c.id]: value }));
-      setStep((s) => s + 1);
+      setStep(step + 1);
     };
     return (
       <Screen key={`card-${step}`} edges={['top', 'bottom']}>
@@ -65,7 +79,9 @@ export default function IssoAindaEMeu() {
           Cartão {step + 1} de {total}
         </AppText>
         <View style={styles.card}>
-          <AppText variant="h2">{c.text}</AppText>
+          <AppText ref={h1} variant="h2">
+            {c.text}
+          </AppText>
         </View>
         <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel="Como isso está hoje?">
           {stances.map((s) => (
@@ -101,7 +117,9 @@ export default function IssoAindaEMeu() {
         <BackBar right={<HelpButton />} />
         <View style={styles.block}>
           <Chip label={stances.find((s) => s.id === stance)!.label} tone="sand" />
-          <AppText variant="h1">{c.text}</AppText>
+          <AppText ref={h1} variant="h1">
+            {c.text}
+          </AppText>
           <AppText variant="body" color="text">
             {reflectionQuestion[stance]}
           </AppText>
@@ -117,7 +135,9 @@ export default function IssoAindaEMeu() {
     <Screen key="summary" edges={['top', 'bottom']}>
       <BackBar right={<HelpButton />} />
       <View style={styles.block}>
-        <AppText variant="h1">Seus cartões hoje</AppText>
+        <AppText ref={h1} variant="h1">
+          Seus cartões hoje
+        </AppText>
         <AppText variant="body" color="textBody">
           {classified.length === 0
             ? 'Todos os cartões foram pulados. Dá para jogar de novo quando quiser.'
