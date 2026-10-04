@@ -39,6 +39,12 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-04 | Screen 09 is a stub: "Feito" + one neutral line + the §6 feedback + "Voltar ao início"; no score, streak, badge or celebration. The optional "guardar uma frase" (spec §4.4 "Depois") is NOT shown or announced — `AfterActivity` takes `children` as the seam for the slice that adds it after the safety layer | Claude, delegated by João | spec §4.4, §4.5, §15, §19 |
 | 2026-10-04 | Activity variations are Mônica's content: the optional `variation` field stays empty for 14 of 15 seeds (only act-0003 has one); none invented. Priority for her: act-0007, act-0009, act-0012, act-0015 (kitchen / going out) | Claude, delegated by João — needs Mônica | spec §4.4, §17, §22 |
 | 2026-10-04 | Feedback is listed in Preferências (spec §10.3 "ver o que está salvo") with remove-one / remove-all that apply at once, unlike the rest of that screen (which waits for "Salvar"); the section says so | Claude, delegated by João | spec §6, §10.3 |
+| 2026-10-04 | AI provider for the open question: **Anthropic API** under a commercial agreement (zero-retention request, international-transfer clauses) — signed before going live | João | board `nnl-f1-ai-provider` |
+| 2026-10-04 | Data controller: named **after the lawyer's advice** | João | board `nnl-f1-controller` |
+| 2026-10-04 | Brazilian **legal opinion** (LGPD, terms, wellbeing vs. psychological service) hired **before launch** | João | board `nnl-f1-legal` |
+| 2026-10-04 | **Mônica reviews and approves all content** (activities, knowledge base) | João, for Mônica — she may reopen | board `nnl-f1-editorial` |
+| 2026-10-04 | Claude **drafts the next activities in batches of 15** as `rascunho` for Mônica's review | João, for Mônica — she may reopen | board `nnl-f1-drafts` |
+| 2026-10-04 | Build the **editorial workflow in the NoctusAI seed** and **admin MFA in core SSO** (platform-wide); activities stay in git/PR review until then | João | board `nnl-f1-admin-mfa`; plan §6 (b), H6 |
 
 ### Rationale — welcome screen without photography
 
