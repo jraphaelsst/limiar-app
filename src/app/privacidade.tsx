@@ -27,13 +27,13 @@ function canShare(): boolean {
  * so export only appears once there is something to export.
  */
 export default function Privacidade() {
-  const { prefs, savedIds } = useAppState();
+  const { prefs, savedIds, gameAResults } = useAppState();
   const [status, setStatus] = useState<ExportStatus>('idle');
   const [text, setText] = useState<string | null>(null);
 
   const exportData = async () => {
     if (!prefs) return;
-    const message = buildExportText(prefs, savedIds, new Date());
+    const message = buildExportText(prefs, savedIds, new Date(), gameAResults);
     setText(null);
     if (!canShare()) {
       setText(message);
@@ -59,7 +59,7 @@ export default function Privacidade() {
 
   const showHere = () => {
     if (!prefs) return;
-    setText(buildExportText(prefs, savedIds, new Date()));
+    setText(buildExportText(prefs, savedIds, new Date(), gameAResults));
     setStatus('idle');
   };
 
@@ -76,6 +76,7 @@ export default function Privacidade() {
         <CheckItem text="A confirmação de que você tem 18 anos ou mais." />
         <CheckItem text="Os interesses e o tempo livre que você escolheu, se escolheu. Você pode mudar isso em Perfil, na opção Preferências." />
         <CheckItem text="As atividades que você salvou." />
+        <CheckItem text="Os resultados do jogo “Ainda gosto disso?” que você escolheu guardar." />
       </View>
       <View style={styles.block}>
         <AppText variant="h3">O que não é pedido</AppText>

@@ -1,11 +1,13 @@
 /**
- * App state that survives restarts: onboarding preferences and saved activities.
+ * App state that survives restarts: onboarding preferences, saved activities and
+ * the game A results the user explicitly chose to keep.
  * Loaded once at startup (the splash screen stays up until `ready`), written
  * through on every change. Device-only — see storage.ts.
  */
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { findActivity, type Category } from '@/data/activities';
+import { gameAPattern, isValidGameAChoice, type GameAChoices } from '@/data/games';
 import type { TimeChoice } from '@/lib/recommend';
 
 import { KEYS, clearAll, load, save } from './storage';
@@ -81,6 +83,29 @@ function isIdList(v: unknown): v is string[] {
 /** What the user can choose (and later change); the rest of `Prefs` is set once at onboarding. */
 export type EditablePrefs = Pick<Prefs, 'interests' | 'availability'>;
 
+/**
+ * A game A result kept by an explicit "Guardar este resultado" (spec §4.5, §6).
+ * Only pair/option ids — the summary is recomputed on display, never stored as text.
+ */
+export type SavedGameAResult = { savedAt: string; choices: GameAChoices };
+
+function isGameAResults(v: unknown): v is SavedGameAResult[] {
+  return (
+    Array.isArray(v) &&
+    v.every((r) => {
+      if (typeof r !== 'object' || r === null) return false;
+      const { savedAt, choices } = r as Record<string, unknown>;
+      return (
+        typeof savedAt === 'string' &&
+        typeof choices === 'object' &&
+        choices !== null &&
+        !Array.isArray(choices) &&
+        Object.entries(choices).every(([k, o]) => (o === null || typeof o === 'string') && isValidGameAChoice(k, o))
+      );
+    })
+  );
+}
+
 type AppState = {
   ready: boolean;
   prefs: Prefs | undefined;
@@ -90,6 +115,10 @@ type AppState = {
   savedIds: readonly string[];
   isSaved: (id: string) => boolean;
   toggleSaved: (id: string) => void;
+  gameAResults: readonly SavedGameAResult[];
+  /** Rejects when the device could not store it — the caller shows that where the user acted. */
+  saveGameAResult: (choices: GameAChoices) => Promise<void>;
+  removeGameAResult: (savedAt: string) => Promise<void>;
   /** Deletes everything stored on this device and returns to onboarding. */
   eraseAll: () => Promise<void>;
 };
@@ -100,14 +129,22 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [prefs, setPrefs] = useState<Prefs | undefined>();
   const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [gameAResults, setGameAResultsState] = useState<SavedGameAResult[]>([]);
+  // Latest list for writes: two quick removals must not resurrect each other from a stale closure.
+  const gameARef = useRef<SavedGameAResult[]>([]);
+  const setGameAResults = useCallback((next: SavedGameAResult[]) => {
+    gameARef.current = next;
+    setGameAResultsState(next);
+  }, []);
 
   useEffect(() => {
-    Promise.all([load(KEYS.prefs, isPrefs), load(KEYS.saved, isIdList)]).then(([p, s]) => {
+    Promise.all([load(KEYS.prefs, isPrefs), load(KEYS.saved, isIdList), load(KEYS.gameAResults, isGameAResults)]).then(([p, s, g]) => {
       setPrefs(p);
       setSavedIds(s ?? []);
+      setGameAResults(g ?? []);
       setReady(true);
     });
-  }, []);
+  }, [setGameAResults]);
 
   const completeOnboarding = useCallback<AppState['completeOnboarding']>(async (p) => {
     const next: Prefs = { ...p, adultConfirmed: true, onboardedAt: new Date().toISOString() };
@@ -134,15 +171,46 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const saveGameAResult = useCallback<AppState['saveGameAResult']>(
+    async (choices) => {
+      const next = [{ savedAt: new Date().toISOString(), choices: { ...choices } }, ...gameARef.current];
+      await save(KEYS.gameAResults, next);
+      setGameAResults(next);
+    },
+    [setGameAResults],
+  );
+
+  const removeGameAResult = useCallback<AppState['removeGameAResult']>(
+    async (savedAt) => {
+      const next = gameARef.current.filter((r) => r.savedAt !== savedAt);
+      await save(KEYS.gameAResults, next);
+      setGameAResults(next);
+    },
+    [setGameAResults],
+  );
+
   const eraseAll = useCallback(async () => {
     await clearAll();
     setSavedIds([]);
+    setGameAResults([]);
     setPrefs(undefined);
-  }, []);
+  }, [setGameAResults]);
 
   const value = useMemo<AppState>(
-    () => ({ ready, prefs, completeOnboarding, updatePrefs, savedIds, isSaved: (id) => savedIds.includes(id), toggleSaved, eraseAll }),
-    [ready, prefs, completeOnboarding, updatePrefs, savedIds, toggleSaved, eraseAll],
+    () => ({
+      ready,
+      prefs,
+      completeOnboarding,
+      updatePrefs,
+      savedIds,
+      isSaved: (id) => savedIds.includes(id),
+      toggleSaved,
+      gameAResults,
+      saveGameAResult,
+      removeGameAResult,
+      eraseAll,
+    }),
+    [ready, prefs, completeOnboarding, updatePrefs, savedIds, toggleSaved, gameAResults, saveGameAResult, removeGameAResult, eraseAll],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
@@ -185,7 +253,12 @@ function longDate(d: Date): string {
  * Spec §10.3 "exportar conteúdo próprio em formato legível": everything this build
  * stores, as plain pt-BR text. Built on demand, never stored, never sent by the app.
  */
-export function buildExportText(prefs: Prefs, savedIds: readonly string[], now: Date): string {
+export function buildExportText(
+  prefs: Prefs,
+  savedIds: readonly string[],
+  now: Date,
+  gameAResults: readonly SavedGameAResult[] = [],
+): string {
   const interests = prefs.interests.length > 0 ? interestLabels(prefs.interests).join(', ') : 'nenhum escolhido';
   const titles = savedIds.map((id) => findActivity(id)?.title ?? 'Uma atividade que saiu do catálogo desta versão');
   const lines = [
@@ -200,6 +273,11 @@ export function buildExportText(prefs: Prefs, savedIds: readonly string[], now: 
     '',
     `Atividades salvas (${titles.length})`,
     ...(titles.length > 0 ? titles.map((t) => `- ${t}`) : ['- Nenhuma']),
+    '',
+    `Resultados guardados do jogo “Ainda gosto disso?” (${gameAResults.length})`,
+    ...(gameAResults.length > 0
+      ? gameAResults.map((r) => `- ${longDate(new Date(r.savedAt))}: ${gameAPattern(r.choices).picked.join(', ') || 'nenhuma escolha'}`)
+      : ['- Nenhum']),
   ];
   return lines.join('\n');
 }

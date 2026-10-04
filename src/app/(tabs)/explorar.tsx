@@ -6,8 +6,8 @@ import { worlds } from '@/data/worlds';
 import { space } from '@/theme';
 
 /**
- * Explorar — the six worlds of spec §3.1. Only "Experimenta isso" has content in
- * Phase 0 (the activity catalog), so only it is pressable; the others are listed
+ * Explorar — the six worlds of spec §3.1. Worlds with Phase 0 content are pressable
+ * ("Quem sou eu agora?" → games, "Experimenta isso" → catalog); the others are listed
  * honestly as coming, never as fake links. No "planos" CTA (conflict C6).
  */
 export default function Explorar() {
