@@ -1,6 +1,17 @@
 /// <reference types="jest" />
 import { type Activity } from '@/data/activities';
-import { match, presetFor, questions, shuffle, timeCap } from '@/lib/recommend';
+import {
+  categoryWeights,
+  match,
+  pickToday,
+  presetFor,
+  questions,
+  rankByFeedback,
+  recommend,
+  shuffle,
+  timeCap,
+  withoutUnsuited,
+} from '@/lib/recommend';
 
 let n = 0;
 const mk = (o: Partial<Activity> = {}): Activity => ({
@@ -244,5 +255,99 @@ describe('questions — spec §4.3 labels', () => {
 
   test('every time option has a cap', () => {
     for (const o of questions[0].options) expect(timeCap).toHaveProperty(o.value as string);
+  });
+});
+
+describe('feedback (spec §6) — exclusion and weighting', () => {
+  const criar1 = mk({ category: 'criar' });
+  const criar2 = mk({ category: 'criar' });
+  const sair1 = mk({ category: 'sair' });
+  const sair2 = mk({ category: 'sair' });
+  const apr = mk({ category: 'aprender' });
+  const pool = [criar1, sair1, apr, criar2, sair2];
+
+  test("'não combina' excludes that activity only — not its category", () => {
+    expect(ids(withoutUnsuited(pool, { [criar1.activityId]: 'nao-combina' }))).toEqual(
+      ids([sair1, apr, criar2, sair2]),
+    );
+  });
+
+  test("'não combina' does not weight its category", () => {
+    expect(categoryWeights({ [criar1.activityId]: 'nao-combina' }, pool).size).toBe(0);
+  });
+
+  test("'mais' +1 and 'menos' −1 per answer, summed per category", () => {
+    const w = categoryWeights(
+      { [criar1.activityId]: 'mais', [criar2.activityId]: 'mais', [sair1.activityId]: 'menos', [apr.activityId]: 'mais', [sair2.activityId]: 'mais' },
+      pool,
+    );
+    expect(Object.fromEntries(w)).toEqual({ criar: 2, sair: 0, aprender: 1 });
+  });
+
+  test('answers about activities not in the catalog count for nothing', () => {
+    expect(categoryWeights({ 'gone-123': 'mais' }, pool).size).toBe(0);
+  });
+
+  test("'mais disso' moves its category first; 'menos disso' moves it last; ties keep the incoming order", () => {
+    const fb = { [sair1.activityId]: 'mais', [apr.activityId]: 'menos' } as const;
+    expect(ids(rankByFeedback(pool, fb, pool))).toEqual(ids([sair1, sair2, criar1, criar2, apr]));
+  });
+
+  test('no feedback leaves the order untouched', () => {
+    expect(ids(rankByFeedback(pool, {}, pool))).toEqual(ids(pool));
+  });
+
+  test("'menos disso' never removes anything", () => {
+    const fb = { [criar1.activityId]: 'menos' } as const;
+    expect(rankByFeedback(pool, fb, pool)).toHaveLength(pool.length);
+  });
+
+  test('recommend: deterministic for a seed, excludes, then ranks the shuffled list', () => {
+    const fb = { [apr.activityId]: 'nao-combina', [sair2.activityId]: 'mais' } as const;
+    const a = recommend({}, undefined, fb, 7, pool);
+    expect(a).toEqual(recommend({}, undefined, fb, 7, pool));
+    expect(ids(a.items)).not.toContain(apr.activityId);
+    expect(a.items.slice(0, 2).every((x) => x.category === 'sair')).toBe(true);
+    // Within a weight tier the order is the seed's shuffle.
+    const shuffled = shuffle(withoutUnsuited(pool, fb), 7).filter((x) => x.category === 'criar');
+    expect(ids(a.items.filter((x) => x.category === 'criar'))).toEqual(ids(shuffled));
+  });
+
+  test('recommend: when the only exact match is "não combina", constraints relax to find another', () => {
+    const solo = mk({ socialMode: 'solo' });
+    const comp = mk({ socialMode: 'companhia' });
+    const r = recommend({ company: 'solo' }, undefined, { [solo.activityId]: 'nao-combina' }, 1, [solo, comp]);
+    expect(ids(r.items)).toEqual([comp.activityId]);
+    expect(r.relaxed).toEqual(['company']);
+  });
+
+  test('recommend: every activity marked "não combina" gives an empty result', () => {
+    const r = recommend({}, undefined, Object.fromEntries(pool.map((a) => [a.activityId, 'nao-combina' as const])), 1, pool);
+    expect(r.items).toEqual([]);
+  });
+});
+
+describe('pickToday', () => {
+  const quick = mk({ category: 'criar', durationMin: [5, 10] });
+  const quick2 = mk({ category: 'sair', durationMin: [10, 15] });
+  const long = mk({ category: 'aprender', durationMin: [60, 90], energy: 'normal' });
+  const pool = [quick, long, quick2];
+
+  test('interests and available time shape the two ideas', () => {
+    expect(ids(pickToday(new Set(['aprender']), undefined, {}, pool))).toEqual([long.activityId, quick.activityId]);
+    expect(ids(pickToday(new Set(), '5-10', {}, pool))).toEqual([quick.activityId, quick2.activityId]);
+  });
+
+  test("never shows 'não combina', not even as a fallback", () => {
+    const r = pickToday(new Set(['aprender']), undefined, { [quick.activityId]: 'nao-combina' }, pool);
+    expect(ids(r)).toEqual([long.activityId, quick2.activityId]);
+  });
+
+  test("'mais/menos disso' order what fits", () => {
+    expect(ids(pickToday(new Set(), undefined, { [quick.activityId]: 'menos' }, pool))).toEqual([long.activityId, quick2.activityId]);
+  });
+
+  test('the real catalog always yields two ideas with no answers', () => {
+    expect(pickToday(new Set(), undefined, {})).toHaveLength(2);
   });
 });

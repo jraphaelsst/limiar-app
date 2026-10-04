@@ -13,6 +13,8 @@ export const KEYS = {
   saved: 'limiar:v1:saved',
   /** Game A results the user explicitly chose to keep — option ids only, never text. */
   gameAResults: 'limiar:v1:game-a-results',
+  /** Spec §6 "mais disso / menos disso / não combina comigo" — activity id → enum, never text. */
+  feedback: 'limiar:v1:feedback',
 } as const;
 
 type Key = (typeof KEYS)[keyof typeof KEYS];

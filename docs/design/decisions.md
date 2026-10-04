@@ -30,6 +30,7 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Mônica credited in-app as **author only** ("Conteúdo editorial de Mônica Tangerino, autora"); no clinical credential until legal review | Claude, delegated by João — Mônica may reopen | spec §1.5, §9; board `nnl-monica-credential` |
 | 2026-10-03 | Mônica's thesis enters the app as **background only** (limiar, habitável, reconhecimento) — never suffering/clinical framing | Claude, delegated by João — Mônica may reopen | board `nnl-thesis-use` |
 
+| 2026-10-04 | Feedback §6 ("mais disso / menos disso / não combina comigo") is one enum per activity id (`limiar:v1:feedback`), editable and removable. Effect, deterministic: "não combina" excludes that activity only (never its category); "mais"/"menos" add ±1 to the activity's category; suggestions are the seeded shuffle, then a stable sort by category weight — "menos" moves a category to the end, never hides it. Applies to "Me tira do sofá" and Home "Para você hoje"; never read as anything about her | Claude, delegated by João | spec §6, §20 (personalização); `src/lib/recommend.ts` |
 
 ### Rationale — welcome screen without photography
 

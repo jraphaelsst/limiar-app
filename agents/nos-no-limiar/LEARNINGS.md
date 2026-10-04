@@ -6,6 +6,7 @@ Tipos: `armadilha` · `prática` · `decisão`. Status: `novo` → `absorvido` (
 
 | Data | Tipo | Aprendizado | Evidência | Status |
 |---|---|---|---|---|
+| 2026-10-04 | prática | Feedback §6 só reordena: "não combina comigo" tira aquela atividade (não a categoria inteira) e "menos disso" empurra a categoria para o fim sem escondê-la — autonomia e variedade; a privacidade diz "só mudam a ordem das sugestões" e isso tem de continuar verdade | limiar-app src/lib/recommend.ts, src/app/privacidade.tsx | novo |
 | 2026-10-03 | armadilha | Toda chave nova guardada aparece em TRÊS textos: "O que fica guardado", a descrição da exportação e a confirmação de "Apagar dados" — atualizar só um deixa os outros falsos | limiar-app privacidade.tsx, perfil.tsx × storage.ts (revisão real) | novo |
 | 2026-10-03 | armadilha | Pergunta de reflexão que busca origem ("De onde vem…?") em cartão de papel familiar abre interpretação de conflito (§4.5); preferir perguntas sobre o presente e a escolha dela | limiar-app src/data/games.ts (revisão real) | novo |
 | 2026-10-03 | prática | Preferências (tela 16): mesmas opções e regra 3–5-ou-nenhum do onboarding; tempo livre ganha "Sem preferência" (não "Prefiro não dizer", que soa como dado pessoal); o resumo salvo aparece na linha do Perfil como confirmação | limiar-app src/app/preferencias.tsx, src/app/(tabs)/perfil.tsx | novo |
