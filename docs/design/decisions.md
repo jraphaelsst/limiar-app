@@ -17,6 +17,10 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Cormorant's high, offset accents (á é ê ó…) **accepted as brand character** — the logo's tagline shares the trait | João | seen on device (iPhone, Expo Go) |
 | 2026-10-03 | Type scale **approved on device** ("perfectly sized") — no longer provisional | João | Perfil → Tipografia on iPhone |
 
+| 2026-10-03 | Agents: **git is the source** (IsaIA-style packages in the NoctusAI agents product, `products/agents/packages/<key>/`); **Claude Code primary**, Agent Studio secondary; one build → both surfaces | João | contract: noctusai `products/agents/projects/agent-packages/CONTRACT.md` |
+| 2026-10-03 | Agents: Studio's copy sees what Claude Code sees — package + project docs + source + Decision Board + learnings, **synced on every push** | João | CONTRACT §G/§H; board snapshot at `docs/design/decision-board.json` |
+| 2026-10-03 | Agents are **read-only advisors**; learnings recorded automatically in the same commit; decisions via the living Decision Board | João | CLAUDE.md |
+
 ### Rationale — welcome screen without photography
 
 1. **Pluralism (spec §2).** One realistic woman on the first screen defines who the user "should" look like (age, hair, body, ethnicity). A cut-paper figure lets more women see themselves in it.

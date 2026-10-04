@@ -1,0 +1,348 @@
+{
+  "formato": "noctus.decision-board-snapshot/v1",
+  "fonte": "https://claude.ai/artifact/HKV3ETARxcEojhpwGjsmTf",
+  "snapshot_em": "2026-10-03T22:55:00Z",
+  "decisoes": [
+    {
+      "id": "nnl-brand-error-color",
+      "project": "Nós no Limiar",
+      "category": "Absorbed from the brand KB",
+      "owner": "João",
+      "status": "open",
+      "title": "Error messages: brand wine or a distinct error red?",
+      "context": "The brand KB: form errors use the brand colour, not red, because red is 'clínico demais'. The app's error token is brick #8B2420 (close to wine #651B19 but distinct).",
+      "options": [
+        {
+          "desc": "Errors stay distinguishable from primary actions (wine means 'act'); always paired with words.",
+          "id": "brick",
+          "label": "Keep brick #8B2420",
+          "recommended": true
+        },
+        {
+          "desc": "Follow the brand rule; errors and actions share a colour, so wording carries the meaning.",
+          "id": "wine",
+          "label": "Use wine for errors"
+        }
+      ]
+    },
+    {
+      "id": "nnl-brand-lexicon",
+      "project": "Nós no Limiar",
+      "category": "Absorbed from the brand KB",
+      "owner": "João",
+      "status": "open",
+      "title": "Adopt the brand's 'avoid' word list as an app copy rule?",
+      "context": "From the brand KB (VOZ/03-LEXICON): avoid burnout, esgotamento, sobrecarga, resiliente/resiliência, empoderamento, autoconhecimento, guerreira, forte (as an aspirational virtue). Also: no exclamation marks, no corrective sentences, 'reconhecimento, não correção'. All compatible with the spec.",
+      "options": [
+        {
+          "desc": "The nos-no-limiar agent flags any of these words in app copy.",
+          "id": "adopt",
+          "label": "Adopt as an app rule",
+          "recommended": true
+        },
+        {
+          "desc": "Agent mentions them as suggestions, never as 'corrigir'.",
+          "id": "advisory",
+          "label": "Advisory only"
+        },
+        {
+          "desc": "Only the spec's own language rules apply.",
+          "id": "no",
+          "label": "Don't adopt"
+        }
+      ]
+    },
+    {
+      "id": "nnl-brand-pill",
+      "project": "Nós no Limiar",
+      "category": "Absorbed from the brand KB",
+      "owner": "João",
+      "status": "open",
+      "title": "Primary buttons: keep the pill shape?",
+      "context": "The brand KB says 'CTA primário nunca em pílula' (pills feel 'consumer demais'). The approved mockup and the app use wine pills for every primary action.",
+      "options": [
+        {
+          "desc": "The brand rule was written for social/print; the app follows the approved mockup.",
+          "id": "keep-pill",
+          "label": "Keep pills (mockup)",
+          "recommended": true
+        },
+        {
+          "desc": "Follow the brand rule: e.g. 12 pt corner radius on primary buttons. One token change, visible on every screen.",
+          "id": "rounded-rect",
+          "label": "Switch to rounded rectangles"
+        }
+      ]
+    },
+    {
+      "id": "nnl-monica-activities",
+      "project": "Nós no Limiar",
+      "category": "Content & product",
+      "owner": "Mônica",
+      "status": "open",
+      "title": "Approve the 15 activity drafts?",
+      "context": "Titles and summaries come from the spec; the steps and variations were written by Claude and are marked 'rascunho' (spec §22: nothing is published by AI alone). File: src/data/activities.ts — or read them in the app under Explorar → Experimenta isso.",
+      "options": [
+        {
+          "desc": "",
+          "id": "approve",
+          "label": "Approved as they are"
+        },
+        {
+          "desc": "List changes in the note.",
+          "id": "edits",
+          "label": "Approved with edits — see note",
+          "recommended": true
+        },
+        {
+          "desc": "",
+          "id": "rewrite",
+          "label": "Mônica will rewrite them"
+        }
+      ]
+    },
+    {
+      "id": "nnl-monica-credential",
+      "project": "Nós no Limiar",
+      "category": "Absorbed from the brand KB",
+      "owner": "João + Mônica",
+      "status": "open",
+      "title": "How is Mônica credited inside the app?",
+      "context": "Mônica is 'psicanalista clínica, graduanda em psicologia e autora'. The spec (§1.5, §9) says the app must not present itself as psychological care; showing a clinical credential inside the app can pull it toward CFP Resolution 9/2024 territory. Legal review (spec §9) is still pending.",
+      "options": [
+        {
+          "desc": "'Conteúdo editorial de Mônica Tangerino, autora' — no clinical credential in app screens until legal review.",
+          "id": "author-only",
+          "label": "Credit as author only",
+          "recommended": true
+        },
+        {
+          "desc": "Show 'psicanalista clínica, graduanda em psicologia e autora' on the About screen.",
+          "id": "full",
+          "label": "Full credential in 'Sobre'"
+        },
+        {
+          "desc": "",
+          "id": "none",
+          "label": "No personal credit in the app yet"
+        }
+      ]
+    },
+    {
+      "id": "nnl-monica-spec-wins",
+      "project": "Nós no Limiar",
+      "category": "Content & product",
+      "owner": "Mônica",
+      "status": "open",
+      "title": "Does Mônica confirm 'the spec wins' over the mockup on conflicts C1–C12?",
+      "context": "Applied by default: tab 'Salvos' with a bookmark, no like counts, no search on Home, Home leads with 'Me tira do sofá', no 'planos' button, copy that doesn't presume loss, welcome without a photo. Full list: docs/design/mockup-v0-decomposition.md §6.",
+      "options": [
+        {
+          "desc": "",
+          "id": "yes",
+          "label": "Yes, keep as built",
+          "recommended": true
+        },
+        {
+          "desc": "Write in the note which conflict should follow the mockup instead.",
+          "id": "partly",
+          "label": "Partly — see note"
+        }
+      ]
+    },
+    {
+      "id": "nnl-next-build",
+      "project": "Nós no Limiar",
+      "category": "Build order",
+      "owner": "João",
+      "status": "open",
+      "title": "What do I build next in the app (after the agents)?",
+      "context": "Onboarding and on-device saving are done. Remaining Phase 0 items you picked earlier.",
+      "options": [
+        {
+          "desc": "The phone still shows Expo's default icon.",
+          "id": "icon",
+          "label": "App icon + splash with the logo",
+          "recommended": true
+        },
+        {
+          "desc": "'Ainda gosto disso?' and 'Isso ainda é meu?' (spec §4.5).",
+          "id": "games",
+          "label": "Games A and B"
+        },
+        {
+          "desc": "Protects 'Me tira do sofá' before it grows.",
+          "id": "tests",
+          "label": "Automated tests for the matching logic"
+        }
+      ]
+    },
+    {
+      "id": "nnl-thesis-use",
+      "project": "Nós no Limiar",
+      "category": "Absorbed from the brand KB",
+      "owner": "João + Mônica",
+      "status": "open",
+      "title": "How much of Mônica's thesis enters the app?",
+      "context": "The brand's thesis starts from 'sofrimento silencioso' and a clinical/psychoanalytic frame (Winnicott, Freud). The app spec forbids presuming suffering and clinical framing. Bridge: the book's 'reorganização' (saúde emocional 'habitável'), 'limiar', 'sustentar'.",
+      "options": [
+        {
+          "desc": "Spirit and vocabulary (limiar, habitável, reconhecimento); never suffering/clinical framing, never theory names in the app.",
+          "id": "background",
+          "label": "Background only",
+          "recommended": true
+        },
+        {
+          "desc": "Some world content (e.g. 'Quem sou eu agora?') adapts book passages, reviewed against the spec.",
+          "id": "editorial",
+          "label": "Also as editorial content"
+        },
+        {
+          "desc": "",
+          "id": "none",
+          "label": "Keep it out entirely"
+        }
+      ]
+    },
+    {
+      "id": "agents-a1-source",
+      "project": "Agents platform",
+      "category": "Contract",
+      "owner": "João",
+      "status": "decided",
+      "title": "Where does an agent package live (its source of truth)?",
+      "context": "The agents product already has Agent Studio: versioned agents in the database, a 10-tab UI, publish gates with evals, and an import format (noctus.agent-bundle/v1). It has no export, no consumer API and no learnings store.\nOur two new agents (mobile-dev, nos-no-limiar) are Claude Code advisors, a new kind next to the runtime agents Julia and IsaIA.\n\nYour message \"build them alike IsaIA\" points to option 1 (authored IsaIA-style: sections + skills + knowledge + evals → bundle → Studio). Please confirm by deciding here.",
+      "options": [
+        {
+          "desc": "Authored and versioned in the Studio UI; repos receive an exported, pinned copy. One place to manage every agent.",
+          "id": "studio",
+          "label": "Agent Studio (database) is the source",
+          "recommended": true
+        },
+        {
+          "desc": "products/agents/packages/<key>/ in the repo; Studio imports them for display and evals. Diff-friendly, but two places to look.",
+          "id": "git",
+          "label": "Git files in noc are the source"
+        },
+        {
+          "desc": "Start file-based to unblock today, migrate to Studio when the export API exists.",
+          "id": "phased",
+          "label": "Git now, Studio later"
+        }
+      ],
+      "answer": {
+        "note": "Decided in chat 2026-10-03: git is the single source, IsaIA-style authoring (sections, skills, knowledge, evals) inside the agents product; one build produces both the Claude Code files and the Studio bundle; file updates must sync.",
+        "optionId": "git"
+      },
+      "decidedAt": "2026-10-03T22:40:00Z"
+    },
+    {
+      "id": "agents-a2-consume",
+      "project": "Agents platform",
+      "category": "Contract",
+      "owner": "João",
+      "status": "decided",
+      "title": "How does a project (like limiar-app) consume an agent?",
+      "context": "A consumer repo needs the agent as files Claude Code can load: .claude/agents/<key>.md plus agents/<key>/ (knowledge, learnings).",
+      "options": [
+        {
+          "desc": "A command (noctus.dev MCP tool / CLI) pulls <key>@<version> from the agents product and writes the files into the repo. Reproducible, works offline, upgrades are explicit commits.",
+          "id": "pinned-pull",
+          "label": "Pinned pull, committed",
+          "recommended": true
+        },
+        {
+          "desc": "A session-start hook downloads the latest published version. Always fresh, but needs network + token and can change under you mid-work.",
+          "id": "live",
+          "label": "Live fetch every session"
+        }
+      ],
+      "answer": {
+        "note": "From chat 2026-10-03: Claude Code is the primary surface (your plan), so consumers hold committed, pinned files; sync runs on every push.",
+        "optionId": "pinned-pull"
+      },
+      "decidedAt": "2026-10-03T22:40:00Z"
+    },
+    {
+      "id": "agents-a3-learnings",
+      "project": "Agents platform",
+      "category": "Contract",
+      "owner": "João",
+      "status": "decided",
+      "title": "How do learnings flow back into the agent?",
+      "context": "You chose: learnings are captured automatically as we work. The question is where they land and how they become part of the next agent version.",
+      "options": [
+        {
+          "desc": "Each consumer repo appends to agents/<key>/LEARNINGS.md in the same commit as the work. A push command sends new entries to the agents product, where they're reviewed in the UI and promoted into the next published version.",
+          "id": "local-then-push",
+          "label": "Local log, pushed upstream, promoted after review",
+          "recommended": true
+        },
+        {
+          "desc": "Sessions post learnings to the product API as they happen. No local copy; needs network every time.",
+          "id": "direct",
+          "label": "Written straight to the agents product"
+        }
+      ],
+      "answer": {
+        "note": "From chat 2026-10-03: learnings are written locally in the same commit and synced upstream on every push.",
+        "optionId": "local-then-push"
+      },
+      "decidedAt": "2026-10-03T22:40:00Z"
+    },
+    {
+      "id": "agents-a4-auth",
+      "project": "Agents platform",
+      "category": "Contract",
+      "owner": "João",
+      "status": "decided",
+      "title": "How does a consumer repo authenticate to the agents product?",
+      "context": "Today every agents-product route refuses non-user callers (403 user_required). A pull or a learnings push from a repo needs some machine access.",
+      "options": [
+        {
+          "desc": "A pk_ token per consumer project with only agents:read (published packages) and learnings:write. Stored in the developer's local env, never committed.",
+          "id": "scoped-token",
+          "label": "Scoped project token",
+          "recommended": true
+        },
+        {
+          "desc": "The command opens a browser login like expo login did. No tokens to manage, but no automation (CI can't pull).",
+          "id": "sso-only",
+          "label": "Your SSO login only"
+        }
+      ],
+      "answer": {
+        "note": "Implied by 'sync on every push': a git hook can't do a browser login, so it needs a scoped token kept in local env (never committed). Reopen if you prefer otherwise.",
+        "optionId": "scoped-token"
+      },
+      "decidedAt": "2026-10-03T22:40:00Z"
+    },
+    {
+      "id": "agents-a5-kind",
+      "project": "Agents platform",
+      "category": "Contract",
+      "owner": "João",
+      "status": "decided",
+      "title": "How should dev advisors sit next to runtime agents in Studio?",
+      "context": "Julia and IsaIA are runtime agents (they chat with end users, have tools, evals). mobile-dev and nos-no-limiar are read-only Claude Code advisors used while developing.\n\nYour message \"build them alike IsaIA\" points to option 1 (same registry, same bundle format). Please confirm by deciding here.",
+      "options": [
+        {
+          "desc": "agents.kind = runtime | dev-advisor. Same versions, sections, knowledge, audit log and UI; tabs that don't apply (Chat, Clients) hide for dev-advisors.",
+          "id": "kind-column",
+          "label": "Same registry, a 'kind' field",
+          "recommended": true
+        },
+        {
+          "desc": "New tables and pages just for dev advisors. Cleaner separation, but duplicates versioning, knowledge and audit.",
+          "id": "separate",
+          "label": "Separate registry"
+        }
+      ],
+      "answer": {
+        "note": "From chat 2026-10-03: 'build them alike IsaIA' — same registry and bundle format, distinguished by a kind field.",
+        "optionId": "kind-column"
+      },
+      "decidedAt": "2026-10-03T22:40:00Z"
+    }
+  ]
+}
