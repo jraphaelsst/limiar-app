@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, OptionPill, Screen } from '@/components/ui';
 import { interestOptions, type InterestId } from '@/state/app-state';
 import { useOnboardingDraft } from '@/state/onboarding-draft';
@@ -22,21 +23,25 @@ export default function Interesses() {
 
   const valid = count === 0 || count >= MIN;
   const hint =
-    count === 0 ? `Escolha de ${MIN} a ${MAX}, ou pule.` : count < MIN ? `Escolha mais ${MIN - count}.` : count === MAX ? 'Você escolheu o máximo.' : `${count} escolhidos.`;
+    count === 0 ? `Escolha de ${MIN} a ${MAX}. É opcional.` : count < MIN ? `Escolha mais ${MIN - count}.` : count === MAX ? 'Você escolheu o máximo.' : `${count} escolhidos.`;
 
   return (
     <Screen
       edges={['top', 'bottom']}
       footer={
-        <Button
-          label={count === 0 ? 'Pular' : 'Continuar'}
-          arrow
-          fullWidth
-          disabled={!valid}
-          onPress={() => router.push('/boas-vindas/tempo')}
-        />
+        <View style={styles.actions}>
+          <Button label="Continuar" arrow fullWidth disabled={count === 0 || !valid} onPress={() => router.push('/boas-vindas/tempo')} />
+          <Button
+            variant="quiet"
+            label="Pular"
+            onPress={() => {
+              setDraft({ ...draft, interests: [] }); // skipping never keeps a partial pick
+              router.push('/boas-vindas/tempo');
+            }}
+          />
+        </View>
       }>
-      <BackBar />
+      <BackBar right={<HelpButton />} />
       <View style={styles.intro}>
         <AppText variant="h1">Do que você tem curiosidade?</AppText>
         <AppText variant="caption" color="textSubtle" accessibilityLiveRegion="polite">
@@ -55,4 +60,5 @@ export default function Interesses() {
 const styles = StyleSheet.create({
   intro: { gap: space[2] },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space[2] },
+  actions: { gap: space[1], alignItems: 'center' },
 });

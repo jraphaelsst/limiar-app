@@ -17,3 +17,4 @@ Status: `new` (not yet in knowledge/) → `absorbed` (folded into a knowledge fi
 | 2026-10-03 | practice | AsyncStorage: versioned keys + shape validation; invalid data is logged, removed, reset | limiar-app 319c167; knowledge: playbook/navigation-state | absorbed |
 | 2026-10-03 | practice | Duration ranges must not repeat the unit ("30–90 min") — found only on device | limiar-app d327081 | new |
 | 2026-10-03 | decision | Expo chosen for a React/TS web developer needing iOS+Android+web, offline, push, stores | limiar-app docs/design/decisions.md; knowledge: playbook/web-to-mobile | absorbed |
+| 2026-10-03 | pitfall | `router.replace('/X')` used to "go back for another" stacks a fresh copy of X and loses its params/state; use `router.back()` | limiar-app src/app/atividade/[id].tsx:41 (live review); knowledge: skill review-mobile-screen | absorbed |

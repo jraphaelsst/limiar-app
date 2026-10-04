@@ -21,7 +21,7 @@ export default function Sofa() {
 
   const [choices, setChoices] = useState<Choices>(base.choices);
   const [step, setStep] = useState(0);
-  const [seed] = useState(() => Date.now());
+  const [seed, setSeed] = useState(() => Date.now());
   const [index, setIndex] = useState(0);
   const { isSaved, toggle } = useSaved();
 
@@ -39,10 +39,10 @@ export default function Sofa() {
       setStep((s) => s + 1);
     };
     return (
-      <Screen edges={['top', 'bottom']}>
+      <Screen key={`q-${step}`} edges={['top', 'bottom']}>
         <BackBar />
         <View style={styles.block}>
-          <AppText variant="caption" color="textSubtle">
+          <AppText variant="caption" color="textSubtle" accessibilityLiveRegion="polite">
             {step + 1} de {pending.length}
           </AppText>
           <AppText variant="h1">{q.title}</AppText>
@@ -66,7 +66,7 @@ export default function Sofa() {
         <AppText variant="body" color="textBody">
           O catálogo desta versão ainda é pequeno. Tente outras escolhas.
         </AppText>
-        <Button label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); }} />
+        <Button label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); setSeed(Date.now()); }} />
       </Screen>
     );
   }
@@ -75,13 +75,14 @@ export default function Sofa() {
   const saved = isSaved(a.activityId);
   return (
     <Screen
+      key={`idea-${a.activityId}`}
       edges={['top', 'bottom']}
       footer={
         <View style={styles.actions}>
-          <Button label="Bora" arrow fullWidth onPress={() => router.push(`/atividade/${a.activityId}`)} />
+          <Button label="Bora" arrow fullWidth onPress={() => router.push({ pathname: '/atividade/[id]', params: { id: a.activityId, from: 'sofa' } })} />
           <View style={styles.secondary}>
             <Button variant="quiet" label="Outra ideia" onPress={() => setIndex((i) => i + 1)} disabled={items.length < 2} />
-            <Button variant="quiet" label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); setIndex(0); }} />
+            <Button variant="quiet" label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); setIndex(0); setSeed(Date.now()); }} />
           </View>
         </View>
       }>
@@ -109,13 +110,16 @@ export default function Sofa() {
       />
       <View style={styles.block}>
         <AppText variant="h3">O que precisa</AppText>
-        {a.materials.map((m) => (
+        {a.materials.length === 0 ? (
+          <CheckItem mark="dot" text="Nada especial." />
+        ) : a.materials.map((m) => (
           <CheckItem key={m} text={m} />
         ))}
       </View>
       {items.length > 1 && (
-        <AppText variant="caption" color="textSubtle">
+        <AppText variant="caption" color="textSubtle" accessibilityLiveRegion="polite">
           Ideia {(index % items.length) + 1} de {items.length}
+          {index % items.length === items.length - 1 ? ' · a próxima recomeça a lista' : ''}
         </AppText>
       )}
     </Screen>
@@ -126,6 +130,6 @@ const styles = StyleSheet.create({
   block: { gap: space[3] },
   options: { gap: space[3] },
   actions: { gap: space[1] },
-  secondary: { flexDirection: 'row', justifyContent: 'space-between' },
+  secondary: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', columnGap: space[4] },
   note: { backgroundColor: color.tintWarm, borderRadius: radius.tile, padding: space[3] },
 });

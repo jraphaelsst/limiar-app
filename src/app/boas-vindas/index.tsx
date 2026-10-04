@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { HelpButton } from '@/components/HelpButton';
 import { WelcomeCollage } from '@/components/WelcomeCollage';
 import { AppText, Button, Logo, Screen } from '@/components/ui';
 import { space } from '@/theme';
@@ -12,6 +13,9 @@ import { space } from '@/theme';
 export default function Welcome() {
   return (
     <Screen edges={['top', 'bottom']} footer={<Button label="Começar" arrow fullWidth onPress={() => router.push('/boas-vindas/proposito')} />}>
+      <View style={styles.top}>
+        <HelpButton />
+      </View>
       <View style={styles.logo}>
         <Logo width={240} />
       </View>
@@ -29,6 +33,7 @@ export default function Welcome() {
 }
 
 const styles = StyleSheet.create({
-  logo: { alignItems: 'center', paddingTop: space[6] },
+  top: { alignItems: 'flex-end', marginRight: -space[3], marginBottom: -space[6] },
+  logo: { alignItems: 'center', paddingTop: space[2] },
   text: { gap: space[3] },
 });

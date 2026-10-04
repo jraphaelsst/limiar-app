@@ -1,7 +1,7 @@
 {
   "key": "mobile-dev",
-  "versao": "0.2.0",
-  "sha": "34e059ba4efe2d1cf3c6665caecec325137e29b2830e52552a11e6c3307ee88e",
-  "compiled_hash": "sha256:a6c5dbf494f99c7b1d7608ea721c287f82f270c77edc9e122fb88764539dc00c",
-  "built_at": "2026-10-04T00:28:34Z"
+  "versao": "0.2.1",
+  "sha": "9591dd1e757d6933721285e7b190ecd9444449ab3be03fdb4c8b32ee7861a137",
+  "compiled_hash": "sha256:a60e7c390016d8011d60ca4067315d396c9862223cd46a4bbfa2afedfae824fe",
+  "built_at": "2026-10-04T00:32:31Z"
 }

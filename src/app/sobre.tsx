@@ -20,7 +20,7 @@ export default function Sobre() {
         <CheckItem mark="dot" text="Não é serviço de emergência." />
       </View>
       <AppText variant="bodySmall" color="textBody">
-        Conteúdo editorial inspirado em estudos sobre vida adulta, relações e reflexão, com fontes revisadas.
+        Conteúdo editorial inspirado em estudos sobre vida adulta, relações e reflexão. As atividades e suas fontes estão em revisão.
       </AppText>
     </Screen>
   );

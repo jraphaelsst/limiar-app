@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, OptionPill, Screen } from '@/components/ui';
 import type { TimeChoice } from '@/lib/recommend';
 import { useAppState } from '@/state/app-state';
@@ -49,7 +50,7 @@ export default function Tempo() {
           <Button variant="quiet" label="Pular" disabled={saving} onPress={() => finish(undefined)} />
         </View>
       }>
-      <BackBar />
+      <BackBar right={<HelpButton />} />
       <AppText variant="h1">Quanto tempo livre costuma aparecer?</AppText>
       <View style={styles.options} accessibilityRole="radiogroup">
         {options.map((o) => (

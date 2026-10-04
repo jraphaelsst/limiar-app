@@ -9,7 +9,7 @@ import { color, radius, space } from '@/theme';
 
 /** Activity card, full — spec §4.4: title · time · materials · 3–5 steps · variation · Concluir/Guardar/Outra/Sair. */
 export default function ActivityScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, from } = useLocalSearchParams<{ id: string; from?: string }>();
   const a = findActivity(id);
   const { isSaved, toggle } = useSaved();
   const [finished, setFinished] = useState(false);
@@ -38,7 +38,7 @@ export default function ActivityScreen() {
           <View style={styles.actions}>
             <Button label="Concluir" fullWidth onPress={() => setFinished(true)} />
             <View style={styles.secondary}>
-              <Button variant="quiet" label="Outra ideia" onPress={() => router.replace('/sofa')} />
+              <Button variant="quiet" label="Outra ideia" onPress={() => (from === 'sofa' && router.canGoBack() ? router.back() : router.push('/sofa'))} />
               <Button variant="quiet" label="Sair sem concluir" onPress={() => router.back()} />
             </View>
           </View>
@@ -65,7 +65,9 @@ export default function ActivityScreen() {
 
       <View style={styles.block}>
         <AppText variant="h3">O que precisa</AppText>
-        {a.materials.map((m) => (
+        {a.materials.length === 0 ? (
+          <CheckItem mark="dot" text="Nada especial." />
+        ) : a.materials.map((m) => (
           <CheckItem key={m} text={m} />
         ))}
       </View>
@@ -102,6 +104,6 @@ const styles = StyleSheet.create({
   block: { gap: space[3] },
   divider: { height: 1, backgroundColor: color.divider },
   actions: { gap: space[1] },
-  secondary: { flexDirection: 'row', justifyContent: 'space-between' },
+  secondary: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', columnGap: space[4] },
   variation: { backgroundColor: color.surface, borderRadius: radius.card, padding: space[4], gap: space[2] },
 });

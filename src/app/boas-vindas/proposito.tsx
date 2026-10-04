@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, CheckItem, Screen } from '@/components/ui';
 import { color, radius, space } from '@/theme';
 
@@ -23,7 +24,7 @@ export default function Proposito() {
           </View>
         )
       }>
-      <BackBar />
+      <BackBar right={<HelpButton />} />
       <AppText variant="h1">Antes de começar</AppText>
       <AppText variant="body" color="textBody">
         O Nós no Limiar é um espaço de reflexão, descoberta e experiências para a vida adulta.
@@ -34,16 +35,17 @@ export default function Proposito() {
         <CheckItem mark="dot" text="Não é serviço de emergência." />
       </View>
       <View style={styles.links}>
-        <Button variant="quiet" label="Contatos de ajuda" onPress={() => router.push('/ajuda')} />
         <Button variant="quiet" label="Privacidade" onPress={() => router.push('/privacidade')} />
+        <AppText variant="caption" color="textSubtle">
+          Termos de uso: em preparação
+        </AppText>
       </View>
 
       {under18 && (
         <View style={styles.notice} accessibilityLiveRegion="polite">
           <AppText variant="h3">O app é para maiores de 18 anos</AppText>
           <AppText variant="bodySmall" color="textBody">
-            Nesta fase, o Nós no Limiar só pode ser usado por pessoas adultas. Se precisar de ajuda agora, os contatos de atendimento
-            continuam disponíveis.
+            Nesta fase, o Nós no Limiar é só para pessoas adultas. Os contatos de ajuda continuam disponíveis.
           </AppText>
           <Button label="Ver contatos de ajuda" onPress={() => router.push('/ajuda')} />
         </View>
@@ -54,7 +56,7 @@ export default function Proposito() {
 
 const styles = StyleSheet.create({
   block: { gap: space[3] },
-  links: { flexDirection: 'row', gap: space[4], marginLeft: -space[2] },
+  links: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', columnGap: space[4], marginLeft: -space[2] },
   actions: { gap: space[1], alignItems: 'center' },
   notice: { backgroundColor: color.surface, borderRadius: radius.card, padding: space[5], gap: space[3], alignItems: 'flex-start' },
 });
