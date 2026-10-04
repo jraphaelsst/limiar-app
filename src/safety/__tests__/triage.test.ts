@@ -5,10 +5,10 @@ import { IDS_DE_REGRA, triage, type Nivel } from '@/safety/triage';
 
 import * as C from './corpus';
 
-const VERMELHO = [...C.VERMELHO, ...C.VERMELHO_CEGO_1];
-const VIOLENCIA = [...C.VIOLENCIA, ...C.VIOLENCIA_CEGO_1];
-const AMARELO = [...C.AMARELO, ...C.AMARELO_CEGO_1];
-const VERDE = [...C.VERDE, ...C.VERDE_CEGO_1];
+const VERMELHO = [...C.VERMELHO, ...C.VERMELHO_CEGO_1, ...C.VERMELHO_CEGO_2];
+const VIOLENCIA = [...C.VIOLENCIA, ...C.VIOLENCIA_CEGO_1, ...C.VIOLENCIA_CEGO_2];
+const AMARELO = [...C.AMARELO, ...C.AMARELO_CEGO_1, ...C.AMARELO_CEGO_2];
+const VERDE = [...C.VERDE, ...C.VERDE_CEGO_1, ...C.VERDE_CEGO_2];
 
 const RANK: Record<Nivel, number> = { verde: 0, amarelo: 1, violencia: 2, vermelho: 3 };
 const misses = (phrases: readonly string[], ok: (p: string) => boolean) => phrases.filter((p) => !ok(p));
@@ -32,7 +32,7 @@ describe('regression corpus', () => {
   });
 
   test('everyday hyperbole consciously routed to the safer level stays violencia', () => {
-    expect(misses(C.ROTA_MAIS_SEGURA, (p) => triage(p).nivel === 'violencia')).toEqual([]);
+    expect(C.ROTA_MAIS_SEGURA.filter(({ frase, nivel }) => triage(frase).nivel !== nivel)).toEqual([]);
   });
 
   test('AMARELO phrases are at least amarelo (never verde)', () => {
@@ -119,7 +119,7 @@ describe('idioms', () => {
 });
 
 describe('regras never carry user text', () => {
-  const all = [...VERMELHO, ...VIOLENCIA, ...AMARELO, ...VERDE, ...C.ROTA_MAIS_SEGURA];
+  const all = [...VERMELHO, ...VIOLENCIA, ...AMARELO, ...VERDE, ...C.ROTA_MAIS_SEGURA.map((r) => r.frase)];
 
   test('every emitted id is a known rule id', () => {
     for (const p of all) for (const id of triage(p).regras) expect(IDS_DE_REGRA.has(id)).toBe(true);

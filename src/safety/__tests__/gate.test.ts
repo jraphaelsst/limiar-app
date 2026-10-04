@@ -28,7 +28,7 @@ describe('decidir — the pure half of useSafetyGate', () => {
   });
 
   test('every corpus vermelho/violência phrase is blocked', () => {
-    for (const p of [...C.VERMELHO, ...C.VERMELHO_CEGO_1, ...C.VIOLENCIA, ...C.VIOLENCIA_CEGO_1]) expect(decidir(p).podeSeguir).toBe(false);
+    for (const p of [...C.VERMELHO, ...C.VERMELHO_CEGO_1, ...C.VERMELHO_CEGO_2, ...C.VIOLENCIA, ...C.VIOLENCIA_CEGO_1, ...C.VIOLENCIA_CEGO_2]) expect(decidir(p).podeSeguir).toBe(false);
   });
 
   test('tipoDoRisco is null below violência', () => {

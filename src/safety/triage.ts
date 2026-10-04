@@ -21,7 +21,7 @@ export type TriageResult = {
 
 /** Word the idiom masking leaves in place of a neutralised death/kill word. */
 const MASCARA = 'xidiomax';
-const PALAVRA_MASCARAVEL = /^(?:mor|mat|suicid)/;
+const PALAVRA_MASCARAVEL = /^(?:mor|mat|suicid|overdose)/;
 const NEGADORES = new Set(['nao', 'nunca', 'jamais', 'nem']);
 
 const ORDEM_NIVEL: Record<Nivel, number> = { verde: 0, amarelo: 1, violencia: 2, vermelho: 3 };
