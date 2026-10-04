@@ -36,6 +36,7 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-04 | Safety net: a first-person death word in a construction no rule knows ("tenho medo de morrer") is **amarelo, never verde** | Claude, delegated by João | rule `rede.mencao-de-morte` |
 | 2026-10-04 | **Safer-route choices, pending human review**: a person "vai me matar se…" and "vou matar [alguém]" ⇒ violência (even as everyday hyperbole); "queria sumir" (except explicit trips), "desistir de tudo", "cansada da vida", "carta de despedida", "não vou estar aqui amanhã", "penso na morte" ⇒ vermelho | Claude, delegated by João — **João/Mônica to confirm** | corpus `ROTA_MAIS_SEGURA`; Decision Board |
 | 2026-10-04 | The triage is measured against **blind held-out sets** written by an agent that never saw the rules; set 1 caught only 32/100 vermelho at first contact, so rules are generalized by category and each blind set then joins the corpus | Claude, delegated by João | `src/safety/__tests__/corpus.ts` |
+| 2026-10-04 | Text features go through **`useSafetyGate().check(text)`** before anything else: vermelho/violência replace the screen with `/seguranca?tipo=autolesao|violencia|ambos` and return `podeSeguir: false`; amarelo continues with `AVISO_AMARELO` + a way to /ajuda; nothing is logged or stored | Claude, delegated by João | `AVISO_AMARELO` copy **pending Mônica's review** |
 
 
 ### Rationale — welcome screen without photography
