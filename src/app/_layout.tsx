@@ -46,6 +46,7 @@ function Routes() {
         <Stack.Screen name="sofa" />
         <Stack.Screen name="atividade/[id]" />
         <Stack.Screen name="atividades" />
+        <Stack.Screen name="preferencias" />
         <Stack.Screen name="tipografia" />
       </Stack.Protected>
       <Stack.Protected guard={!onboarded}>
