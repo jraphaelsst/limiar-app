@@ -1,7 +1,8 @@
 /**
  * App state that survives restarts: onboarding preferences, saved activities,
  * the game A results the user explicitly chose to keep and her "mais disso /
- * menos disso / não combina comigo" answers about activities (spec §6).
+ * menos disso / não combina comigo" answers about activities (spec §6) and the guided-reflection
+ * cards she bookmarked (ids only, spec §4.7).
  * Loaded once at startup (the splash screen stays up until `ready`), written
  * through on every change via ONE serialized write queue (app-store.ts).
  * Device-only — see storage.ts.
@@ -9,6 +10,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { findActivity } from '@/data/activities';
+import { findReflection, findTheme } from '@/data/reflexoes';
 import { gameAPattern, type GameAChoices } from '@/data/games';
 import { longDate } from '@/lib/dates';
 
@@ -62,6 +64,13 @@ type AppState = {
   setFeedback: (id: string, value: Feedback | undefined) => Promise<void>;
   /** Removes every answer; same failure contract as setFeedback. */
   clearFeedback: () => Promise<void>;
+  /** Guided-reflection cards she bookmarked, newest first — card ids, never text. */
+  savedReflectionIds: readonly string[];
+  /**
+   * Sets whether one reflection card is saved. Written first, then shown (like setFeedback):
+   * rejects when the device could not store it — the caller says so where she acted.
+   */
+  setReflectionSaved: (id: string, saved: boolean) => Promise<void>;
   /** Deletes everything stored on this device and returns to onboarding. */
   eraseAll: () => Promise<void>;
 };
@@ -74,6 +83,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [savedIds, setSavedIdsState] = useState<readonly string[]>([]);
   const [gameAResults, setGameAResults] = useState<readonly SavedGameAResult[]>([]);
   const [feedback, setFeedbackState] = useState<FeedbackMap>({});
+  const [savedReflectionIds, setSavedReflectionIds] = useState<readonly string[]>([]);
   // What the screen shows (committed + optimistic bookmark taps): a toggle decides from what she saw.
   const shownSaved = useRef<readonly string[]>([]);
   const setSavedIds = useCallback((next: readonly string[]) => {
@@ -86,6 +96,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       setPrefs(snap.prefs);
       setGameAResults(snap.gameAResults);
       setFeedbackState(snap.feedback);
+      setSavedReflectionIds(snap.savedReflectionIds);
       // Optimistic bookmark taps still queued keep showing; the list converges when the queue drains.
       if (idle) setSavedIds(snap.savedIds);
     }),
@@ -135,6 +146,10 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     await store.clearFeedback();
   }, [store]);
 
+  const setReflectionSaved = useCallback<AppState['setReflectionSaved']>(async (id, saved) => {
+    await store.setReflectionSaved(id, saved);
+  }, [store]);
+
   const eraseAll = useCallback<AppState['eraseAll']>(async () => {
     await store.eraseAll();
   }, [store]);
@@ -154,6 +169,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       feedback,
       setFeedback,
       clearFeedback,
+      savedReflectionIds,
+      setReflectionSaved,
       eraseAll,
     }),
     [
@@ -169,6 +186,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       feedback,
       setFeedback,
       clearFeedback,
+      savedReflectionIds,
+      setReflectionSaved,
       eraseAll,
     ],
   );
@@ -197,11 +216,17 @@ export function buildExportText(
   now: Date,
   gameAResults: readonly SavedGameAResult[] = [],
   feedback: FeedbackMap = {},
+  savedReflectionIds: readonly string[] = [],
 ): string {
   const interests = prefs.interests.length > 0 ? interestLabels(prefs.interests).join(', ') : 'nenhum escolhido';
   const titleOf = (id: string) => findActivity(id)?.title ?? 'Uma atividade que saiu do catálogo desta versão';
   const titles = savedIds.map(titleOf);
   const answers = Object.entries(feedback);
+  // A card is named by its theme and title — the curated text she read, never anything of hers.
+  const reflectionOf = (id: string) => {
+    const r = findReflection(id);
+    return r ? `${findTheme(r.theme)?.label ?? r.theme}: ${r.title}` : 'Um cartão que saiu do app nesta versão';
+  };
   const lines = [
     'Nós no Limiar — o que o app guarda neste aparelho',
     `Exportado em ${longDate(now)}`,
@@ -222,6 +247,9 @@ export function buildExportText(
     '',
     `Respostas sobre atividades (${answers.length})`,
     ...(answers.length > 0 ? answers.map(([id, f]) => `- ${titleOf(id)}: ${feedbackLabel(f)}`) : ['- Nenhuma']),
+    '',
+    `Cartões de reflexão guardados (${savedReflectionIds.length})`,
+    ...(savedReflectionIds.length > 0 ? savedReflectionIds.map((id) => `- ${reflectionOf(id)}`) : ['- Nenhum']),
   ];
   return lines.join('\n');
 }

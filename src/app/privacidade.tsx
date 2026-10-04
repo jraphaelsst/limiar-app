@@ -24,7 +24,7 @@ const statusText: Record<Exclude<ExportStatus, 'idle'>, string> = {
  * so export only appears once there is something to export.
  */
 export default function Privacidade() {
-  const { prefs, savedIds, gameAResults, feedback } = useAppState();
+  const { prefs, savedIds, gameAResults, feedback, savedReflectionIds } = useAppState();
   const [status, setStatus] = useState<ExportStatus>('idle');
   const [text, setText] = useState<string | null>(null);
   // One share sheet at a time: the button is disabled while it is open, and the ref
@@ -39,7 +39,7 @@ export default function Privacidade() {
 
   const exportData = async () => {
     if (!prefs || sharingRef.current) return;
-    const message = buildExportText(prefs, savedIds, new Date(), gameAResults, feedback);
+    const message = buildExportText(prefs, savedIds, new Date(), gameAResults, feedback, savedReflectionIds);
     setText(null);
     if (!canShare()) {
       setText(message);
@@ -70,7 +70,7 @@ export default function Privacidade() {
 
   const showHere = () => {
     if (!prefs) return;
-    setText(buildExportText(prefs, savedIds, new Date(), gameAResults, feedback));
+    setText(buildExportText(prefs, savedIds, new Date(), gameAResults, feedback, savedReflectionIds));
     setStatus('idle');
   };
 
@@ -90,6 +90,7 @@ export default function Privacidade() {
         <CheckItem text="As atividades que você salvou." />
         <CheckItem text="Os resultados do jogo “Ainda gosto disso?” que você escolheu guardar." />
         <CheckItem text="Suas respostas “mais disso”, “menos disso” ou “não combina comigo” sobre atividades. Elas só mudam a ordem das sugestões. Você pode ver e remover em Perfil, na opção Preferências." />
+        <CheckItem text="Os cartões de reflexão que você guardou: só qual cartão foi, nunca um texto seu." />
       </View>
       <View style={styles.block}>
         <AppText variant="h3">O que não é pedido</AppText>
@@ -101,7 +102,7 @@ export default function Privacidade() {
         <View style={styles.block}>
           <AppText variant="h3">Exportar seus dados</AppText>
           <AppText variant="bodySmall" color="textBody">
-            Gera um texto com suas escolhas, os títulos das atividades salvas, os resultados de jogo que você guardou e suas respostas sobre atividades. Você escolhe para onde enviar, ou cancela. Uma cópia
+            Gera um texto com suas escolhas, os títulos das atividades salvas, os resultados de jogo que você guardou, suas respostas sobre atividades e os cartões de reflexão guardados. Você escolhe para onde enviar, ou cancela. Uma cópia
             enviada fica com quem a recebe: apagar os dados aqui não apaga essa cópia.
           </AppText>
           <View style={styles.actions}>

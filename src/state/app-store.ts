@@ -25,6 +25,15 @@ export function isIdList(v: unknown): v is string[] {
   return Array.isArray(v) && v.every((x) => typeof x === 'string');
 }
 
+/** A guided-reflection card id (`ref-0001`) — the only thing kept about a reflection (spec §6: never text). */
+export function isReflectionId(v: unknown): v is string {
+  return typeof v === 'string' && /^ref-\d{4}$/.test(v);
+}
+
+export function isReflectionIdList(v: unknown): v is string[] {
+  return Array.isArray(v) && v.every(isReflectionId) && new Set(v).size === v.length;
+}
+
 export function isGameAResults(v: unknown): v is SavedGameAResult[] {
   return (
     Array.isArray(v) &&
@@ -63,9 +72,11 @@ export type Snapshot = {
   savedIds: readonly string[];
   gameAResults: readonly SavedGameAResult[];
   feedback: FeedbackMap;
+  /** Bookmarked reflection cards, newest first — ids only. */
+  savedReflectionIds: readonly string[];
 };
 
-const empty: Snapshot = { prefs: undefined, savedIds: [], gameAResults: [], feedback: {} };
+const empty: Snapshot = { prefs: undefined, savedIds: [], gameAResults: [], feedback: {}, savedReflectionIds: [] };
 
 /** `idle`: no other write is waiting in the queue after this one. */
 export type CommitListener = (snapshot: Snapshot, info: { idle: boolean }) => void;
@@ -102,13 +113,20 @@ export function createAppStore(onCommit: CommitListener = () => {}) {
     init(): Promise<Snapshot> {
       return write(async () => {
         try {
-          const [prefs, savedIds, gameAResults, feedback] = await Promise.all([
+          const [prefs, savedIds, gameAResults, feedback, savedReflectionIds] = await Promise.all([
             load(KEYS.prefs, isPrefs),
             load(KEYS.saved, isIdList),
             load(KEYS.gameAResults, isGameAResults),
             load(KEYS.feedback, isFeedbackMap),
+            load(KEYS.savedReflections, isReflectionIdList),
           ]);
-          return { prefs, savedIds: savedIds ?? [], gameAResults: gameAResults ?? [], feedback: feedback ?? {} };
+          return {
+            prefs,
+            savedIds: savedIds ?? [],
+            gameAResults: gameAResults ?? [],
+            feedback: feedback ?? {},
+            savedReflectionIds: savedReflectionIds ?? [],
+          };
         } catch (e) {
           console.error('[storage] could not read the stored data at startup; starting empty.', e);
           return empty;
@@ -144,6 +162,18 @@ export function createAppStore(onCommit: CommitListener = () => {}) {
         const savedIds = saved ? [id, ...cur.savedIds] : cur.savedIds.filter((x) => x !== id);
         await save(KEYS.saved, savedIds);
         return { ...cur, savedIds };
+      });
+    },
+
+    /** Idempotent, like setSaved: bookmarks (or un-bookmarks) one reflection card by id. */
+    setReflectionSaved(id: string, saved: boolean): Promise<Snapshot> {
+      return write(async (cur) => {
+        if (!isReflectionId(id)) throw new Error(`invalid reflection id: ${String(id)}`);
+        const has = cur.savedReflectionIds.includes(id);
+        if (has === saved) return cur;
+        const savedReflectionIds = saved ? [id, ...cur.savedReflectionIds] : cur.savedReflectionIds.filter((x) => x !== id);
+        await save(KEYS.savedReflections, savedReflectionIds);
+        return { ...cur, savedReflectionIds };
       });
     },
 

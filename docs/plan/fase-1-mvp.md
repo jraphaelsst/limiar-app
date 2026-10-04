@@ -60,7 +60,8 @@ servidor nesta fase, exceto o texto da pergunta aberta na onda 3 — processado 
 | `limiar:v1:saved` | ids de atividades guardadas | §13 saved_items |
 | `limiar:v1:game-a-results` | ids de escolhas do jogo A guardadas | §4.5 |
 | feedback (onda 1) | enum por atividade | §13 activity_feedback |
-| reflexões (onda 2) | texto só após "Salvar esta reflexão" | §13 saved_reflections |
+| `limiar:v1:saved-reflections` | ids dos cartões de reflexão guardados (onda 2) — nunca texto | §13 saved_reflections, §4.7 |
+| reflexões com texto (onda 3) | texto só após "Salvar esta reflexão" | §13 saved_reflections |
 
 `safety_events`: **não registrados** na Fase 1 (não há analytics nem servidor; a spec prefere não guardar). Quando
 houver analytics, só contagem agregada por nível + versão do classificador, nunca texto (§8.2, §14).

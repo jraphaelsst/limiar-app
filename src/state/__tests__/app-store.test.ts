@@ -99,7 +99,7 @@ describe('createAppStore — no resurrection', () => {
     const erasing = store.eraseAll();
     await Promise.all([saving, erasing]);
     for (const k of Object.values(KEYS)) expect(await AsyncStorage.getItem(k)).toBeNull();
-    expect(store.committed).toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {} });
+    expect(store.committed).toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {}, savedReflectionIds: [] });
   });
 
   test('save, unsave, save in quick succession ends saved (order kept, idempotent)', async () => {
@@ -148,14 +148,14 @@ describe('createAppStore.init', () => {
     await AsyncStorage.setItem(KEYS.prefs, JSON.stringify(prefs));
     await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0001']));
     const store = createAppStore();
-    await expect(store.init()).resolves.toEqual({ prefs, savedIds: ['act-0001'], gameAResults: [], feedback: {} });
+    await expect(store.init()).resolves.toEqual({ prefs, savedIds: ['act-0001'], gameAResults: [], feedback: {}, savedReflectionIds: [] });
   });
 
   test('a storage error at startup is logged and the app starts empty — init still resolves (splash closes)', async () => {
     await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0001']));
     (AsyncStorage.getItem as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('I/O error')));
     const store = createAppStore();
-    await expect(store.init()).resolves.toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {} });
+    await expect(store.init()).resolves.toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {}, savedReflectionIds: [] });
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('could not read the stored data'), expect.any(Error));
     // Nothing is deleted on a read error: the data may be fine next launch.
     expect(await stored(KEYS.saved)).toEqual(['act-0001']);

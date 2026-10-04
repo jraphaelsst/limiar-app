@@ -4,7 +4,8 @@
  * migrate instead of misreading old data.
  *
  * Never store free text typed by the user here without an explicit "save"
- * action (spec §6) — today only ids and enum choices are stored.
+ * action (spec §6) — today only ids and enum choices are stored (a saved reflection is
+ * the id of a curated card; nothing she typed, because there is no typing yet).
  */
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,6 +16,8 @@ export const KEYS = {
   gameAResults: 'limiar:v1:game-a-results',
   /** Spec §6 "mais disso / menos disso / não combina comigo" — activity id → enum, never text. */
   feedback: 'limiar:v1:feedback',
+  /** Guided-reflection cards she bookmarked (spec §4.7, §13 saved_reflections) — card ids only, never text. */
+  savedReflections: 'limiar:v1:saved-reflections',
 } as const;
 
 type Key = (typeof KEYS)[keyof typeof KEYS];
