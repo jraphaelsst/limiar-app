@@ -5,17 +5,9 @@ import { StyleSheet, View } from 'react-native';
 import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, OptionPill, Screen } from '@/components/ui';
 import type { TimeChoice } from '@/lib/recommend';
-import { useAppState } from '@/state/app-state';
+import { timeOptions, useAppState } from '@/state/app-state';
 import { useOnboardingDraft } from '@/state/onboarding-draft';
 import { space } from '@/theme';
-
-/** Spec §4.1 step 5 — availability, verbatim options; skippable. */
-const options: readonly { value: TimeChoice; label: string }[] = [
-  { value: '5-10', label: '5–10 min' },
-  { value: '15-30', label: '15–30 min' },
-  { value: '60', label: '1 h' },
-  { value: 'livre', label: 'Meio período' },
-];
 
 /**
  * Last onboarding step. The notifications step (spec §4.1.6) is left out of
@@ -53,7 +45,7 @@ export default function Tempo() {
       <BackBar right={<HelpButton />} />
       <AppText variant="h1">Quanto tempo livre costuma aparecer?</AppText>
       <View style={styles.options} accessibilityRole="radiogroup">
-        {options.map((o) => (
+        {timeOptions.map((o) => (
           <OptionPill
             key={o.value}
             label={o.label}
