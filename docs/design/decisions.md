@@ -30,7 +30,6 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Mônica credited in-app as **author only** ("Conteúdo editorial de Mônica Tangerino, autora"); no clinical credential until legal review | Claude, delegated by João — Mônica may reopen | spec §1.5, §9; board `nnl-monica-credential` |
 | 2026-10-03 | Mônica's thesis enters the app as **background only** (limiar, habitável, reconhecimento) — never suffering/clinical framing | Claude, delegated by João — Mônica may reopen | board `nnl-thesis-use` |
 
-| 2026-10-03 | Games follow the Sofá back rule on every platform (back = previous round / close the reflection), one mechanism app-wide (`usePreventRemove`) | Claude, delegated by João | mobile-dev review of games |
 
 ### Rationale — welcome screen without photography
 
