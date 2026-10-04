@@ -2,8 +2,14 @@
  * Activity catalog — spec §5 schema, seeded from spec §5.1 (15 seeds).
  *
  * Every item is `rascunho`: titles, summaries, time and materials come from the
- * spec; steps and variations were written to be faithful to each summary and
- * still need editorial review (spec §22 — nothing is published by AI alone).
+ * spec; steps and the one variation (act-0003) were written to be faithful to each
+ * summary and still need editorial review (spec §22 — nothing is published by AI alone).
+ *
+ * `variation` (spec §4.4: alternative for low energy or reduced mobility, "quando
+ * aplicável") is optional and shown wherever the activity is. The other 14 seeds have
+ * none ON PURPOSE: variations are Mônica's content and are not invented here — they are
+ * pending her, first for the ones that involve going out, walking or the kitchen
+ * (act-0007, act-0009, act-0012, act-0015).
  */
 
 export type Category = 'criar' | 'aprender' | 'sair' | 'conectar' | 'organizar' | 'explorar' | 'refletir';
@@ -27,6 +33,7 @@ export type Activity = {
   mobility: Mobility;
   materials: readonly string[];
   steps: readonly string[];
+  /** Spec §4.4 — optional; never invented (see header). */
   variation?: string;
   safetyTags: readonly string[];
   sourceNote: string;

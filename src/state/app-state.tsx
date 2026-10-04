@@ -1,6 +1,7 @@
 /**
- * App state that survives restarts: onboarding preferences, saved activities and
- * the game A results the user explicitly chose to keep.
+ * App state that survives restarts: onboarding preferences, saved activities,
+ * the game A results the user explicitly chose to keep and her "mais disso /
+ * menos disso / não combina comigo" answers about activities (spec §6).
  * Loaded once at startup (the splash screen stays up until `ready`), written
  * through on every change via ONE serialized write queue (app-store.ts).
  * Device-only — see storage.ts.
@@ -12,9 +13,11 @@ import { gameAPattern, type GameAChoices } from '@/data/games';
 import { longDate } from '@/lib/dates';
 
 import { createAppStore, type SavedGameAResult, type Snapshot } from './app-store';
+import { feedbackLabel, type Feedback, type FeedbackMap } from './feedback';
 import { interestLabels, timeLabel, type EditablePrefs, type Prefs } from './prefs';
 
 export type { SavedGameAResult } from './app-store';
+export { feedbackLabel, feedbackOptions, type Feedback, type FeedbackMap } from './feedback';
 export {
   interestCategories,
   interestHint,
@@ -50,6 +53,15 @@ type AppState = {
   /** Rejects when the device could not store it — the caller shows that where the user acted. */
   saveGameAResult: (choices: GameAChoices) => Promise<void>;
   removeGameAResult: (savedAt: string) => Promise<void>;
+  /** Spec §6 answers per activity id — what is stored, never an inference. */
+  feedback: FeedbackMap;
+  /**
+   * Sets (or, with `undefined`, removes) her answer about one activity. Written first, then
+   * shown: rejects when the device could not store it — the caller says so where she acted.
+   */
+  setFeedback: (id: string, value: Feedback | undefined) => Promise<void>;
+  /** Removes every answer; same failure contract as setFeedback. */
+  clearFeedback: () => Promise<void>;
   /** Deletes everything stored on this device and returns to onboarding. */
   eraseAll: () => Promise<void>;
 };
@@ -61,6 +73,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [prefs, setPrefs] = useState<Prefs | undefined>();
   const [savedIds, setSavedIdsState] = useState<readonly string[]>([]);
   const [gameAResults, setGameAResults] = useState<readonly SavedGameAResult[]>([]);
+  const [feedback, setFeedbackState] = useState<FeedbackMap>({});
   // What the screen shows (committed + optimistic bookmark taps): a toggle decides from what she saw.
   const shownSaved = useRef<readonly string[]>([]);
   const setSavedIds = useCallback((next: readonly string[]) => {
@@ -72,6 +85,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     createAppStore((snap: Snapshot, { idle }) => {
       setPrefs(snap.prefs);
       setGameAResults(snap.gameAResults);
+      setFeedbackState(snap.feedback);
       // Optimistic bookmark taps still queued keep showing; the list converges when the queue drains.
       if (idle) setSavedIds(snap.savedIds);
     }),
@@ -113,6 +127,14 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     await store.removeGameAResult(savedAt);
   }, [store]);
 
+  const setFeedback = useCallback<AppState['setFeedback']>(async (id, value) => {
+    await store.setFeedback(id, value);
+  }, [store]);
+
+  const clearFeedback = useCallback<AppState['clearFeedback']>(async () => {
+    await store.clearFeedback();
+  }, [store]);
+
   const eraseAll = useCallback<AppState['eraseAll']>(async () => {
     await store.eraseAll();
   }, [store]);
@@ -129,9 +151,26 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       gameAResults,
       saveGameAResult,
       removeGameAResult,
+      feedback,
+      setFeedback,
+      clearFeedback,
       eraseAll,
     }),
-    [ready, prefs, completeOnboarding, updatePrefs, savedIds, toggleSaved, gameAResults, saveGameAResult, removeGameAResult, eraseAll],
+    [
+      ready,
+      prefs,
+      completeOnboarding,
+      updatePrefs,
+      savedIds,
+      toggleSaved,
+      gameAResults,
+      saveGameAResult,
+      removeGameAResult,
+      feedback,
+      setFeedback,
+      clearFeedback,
+      eraseAll,
+    ],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
@@ -157,9 +196,12 @@ export function buildExportText(
   savedIds: readonly string[],
   now: Date,
   gameAResults: readonly SavedGameAResult[] = [],
+  feedback: FeedbackMap = {},
 ): string {
   const interests = prefs.interests.length > 0 ? interestLabels(prefs.interests).join(', ') : 'nenhum escolhido';
-  const titles = savedIds.map((id) => findActivity(id)?.title ?? 'Uma atividade que saiu do catálogo desta versão');
+  const titleOf = (id: string) => findActivity(id)?.title ?? 'Uma atividade que saiu do catálogo desta versão';
+  const titles = savedIds.map(titleOf);
+  const answers = Object.entries(feedback);
   const lines = [
     'Nós no Limiar — o que o app guarda neste aparelho',
     `Exportado em ${longDate(now)}`,
@@ -177,6 +219,9 @@ export function buildExportText(
     ...(gameAResults.length > 0
       ? gameAResults.map((r) => `- ${longDate(new Date(r.savedAt))}: ${gameAPattern(r.choices).picked.join(', ') || 'nenhuma escolha'}`)
       : ['- Nenhum']),
+    '',
+    `Respostas sobre atividades (${answers.length})`,
+    ...(answers.length > 0 ? answers.map(([id, f]) => `- ${titleOf(id)}: ${feedbackLabel(f)}`) : ['- Nenhuma']),
   ];
   return lines.join('\n');
 }

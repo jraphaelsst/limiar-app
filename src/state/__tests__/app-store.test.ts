@@ -99,7 +99,7 @@ describe('createAppStore — no resurrection', () => {
     const erasing = store.eraseAll();
     await Promise.all([saving, erasing]);
     for (const k of Object.values(KEYS)) expect(await AsyncStorage.getItem(k)).toBeNull();
-    expect(store.committed).toEqual({ prefs: undefined, savedIds: [], gameAResults: [] });
+    expect(store.committed).toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {} });
   });
 
   test('save, unsave, save in quick succession ends saved (order kept, idempotent)', async () => {
@@ -148,14 +148,14 @@ describe('createAppStore.init', () => {
     await AsyncStorage.setItem(KEYS.prefs, JSON.stringify(prefs));
     await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0001']));
     const store = createAppStore();
-    await expect(store.init()).resolves.toEqual({ prefs, savedIds: ['act-0001'], gameAResults: [] });
+    await expect(store.init()).resolves.toEqual({ prefs, savedIds: ['act-0001'], gameAResults: [], feedback: {} });
   });
 
   test('a storage error at startup is logged and the app starts empty — init still resolves (splash closes)', async () => {
     await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0001']));
     (AsyncStorage.getItem as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('I/O error')));
     const store = createAppStore();
-    await expect(store.init()).resolves.toEqual({ prefs: undefined, savedIds: [], gameAResults: [] });
+    await expect(store.init()).resolves.toEqual({ prefs: undefined, savedIds: [], gameAResults: [], feedback: {} });
     expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('could not read the stored data'), expect.any(Error));
     // Nothing is deleted on a read error: the data may be fine next launch.
     expect(await stored(KEYS.saved)).toEqual(['act-0001']);
@@ -176,5 +176,85 @@ describe('isGameAResults', () => {
     expect(isGameAResults([{ savedAt: 'not a date', choices: {} }])).toBe(false);
     expect(isGameAResults([{ savedAt: 42, choices: {} }])).toBe(false);
     expect(isGameAResults([{ savedAt: '2026-10-03T10:00:00.000Z', choices: {} }])).toBe(true);
+  });
+});
+
+describe('createAppStore — feedback (spec §6)', () => {
+  test('init loads stored feedback', async () => {
+    await AsyncStorage.setItem(KEYS.feedback, JSON.stringify({ 'act-0001': 'mais' }));
+    const store = createAppStore();
+    expect((await store.init()).feedback).toEqual({ 'act-0001': 'mais' });
+  });
+
+  test('an invalid stored value is reset, and only that key', async () => {
+    await AsyncStorage.setItem(KEYS.feedback, JSON.stringify({ 'act-0001': 'adoro' }));
+    await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0002']));
+    const store = createAppStore();
+    const snap = await store.init();
+    expect(snap.feedback).toEqual({});
+    expect(snap.savedIds).toEqual(['act-0002']);
+    expect(await AsyncStorage.getItem(KEYS.feedback)).toBeNull();
+  });
+
+  test('set, change and remove — each write lands in call order even when the first is slow', async () => {
+    const store = createAppStore();
+    await store.init();
+    slowNextWrite(30);
+    await Promise.all([
+      store.setFeedback('a', 'mais'),
+      store.setFeedback('b', 'nao-combina'),
+      store.setFeedback('a', 'menos'),
+      store.setFeedback('b', undefined),
+    ]);
+    expect(await stored(KEYS.feedback)).toEqual({ a: 'menos' });
+    expect(store.committed.feedback).toEqual({ a: 'menos' });
+  });
+
+  test('a slow answer then a removal: the removed answer stays removed', async () => {
+    const store = createAppStore();
+    await store.init();
+    slowNextWrite(30);
+    await Promise.all([store.setFeedback('a', 'mais'), store.setFeedback('a', undefined)]);
+    expect(await stored(KEYS.feedback)).toEqual({});
+  });
+
+  test('repeating the same answer writes nothing', async () => {
+    const store = createAppStore();
+    await store.init();
+    await store.setFeedback('a', 'mais');
+    setItem.mockClear();
+    await store.setFeedback('a', 'mais');
+    await store.setFeedback('z', undefined);
+    expect(setItem).not.toHaveBeenCalled();
+  });
+
+  test('clearFeedback removes every answer and keeps the rest', async () => {
+    await AsyncStorage.setItem(KEYS.saved, JSON.stringify(['act-0002']));
+    const store = createAppStore();
+    await store.init();
+    await store.setFeedback('a', 'mais');
+    await store.setFeedback('b', 'menos');
+    await store.clearFeedback();
+    expect(await stored(KEYS.feedback)).toEqual({});
+    expect(store.committed.savedIds).toEqual(['act-0002']);
+  });
+
+  test('a feedback write in flight cannot rewrite it after eraseAll', async () => {
+    await AsyncStorage.setItem(KEYS.prefs, JSON.stringify(prefs));
+    const store = createAppStore();
+    await store.init();
+    slowNextWrite(30);
+    await Promise.all([store.setFeedback('act-0001', 'nao-combina'), store.eraseAll()]);
+    expect(await AsyncStorage.getItem(KEYS.feedback)).toBeNull();
+    expect(store.committed.feedback).toEqual({});
+  });
+
+  test('a failed feedback write rejects and leaves the committed answers alone', async () => {
+    const store = createAppStore();
+    await store.init();
+    await store.setFeedback('a', 'mais');
+    setItem.mockImplementationOnce(() => Promise.reject(new Error('disk full')));
+    await expect(store.setFeedback('a', 'menos')).rejects.toThrow('disk full');
+    expect(store.committed.feedback).toEqual({ a: 'mais' });
   });
 });

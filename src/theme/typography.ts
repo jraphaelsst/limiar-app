@@ -28,6 +28,7 @@ export const typography = {
   // Lora — reading
   body: { fontFamily: family.body, fontSize: 17, lineHeight: 26 },
   bodySmall: { fontFamily: family.body, fontSize: 15, lineHeight: 22 },
+  bodyLarge: { fontFamily: family.body, fontSize: 21, lineHeight: 31 }, // one activity step on its own (screen 08)
 
   // Inter — interface
   label: { fontFamily: family.uiMedium, fontSize: 15, lineHeight: 20 },

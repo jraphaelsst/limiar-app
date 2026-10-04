@@ -1,12 +1,14 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View, type Text } from 'react-native';
 
-import { AppText, BackBar, Button, CheckItem, Chip, IconButton, Icons, MetaRow, OptionPill, Screen } from '@/components/ui';
+import { useBookmark } from '@/components/Bookmark';
+import { AppText, BackBar, Button, CheckItem, Chip, Icons, MetaRow, OptionPill, Screen } from '@/components/ui';
 import { categoryLabel, energyLabel, environmentLabel, formatDuration } from '@/data/activities';
-import { announce, useFocusOnChange } from '@/lib/a11y';
-import { match, presetFor, questions, shuffle, type Choices, type Preset } from '@/lib/recommend';
-import { saveFailedText, useSaved } from '@/state/app-state';
+import { useFocusOnChange } from '@/lib/a11y';
+import { presetFor, questions, recommend, type Choices, type Preset } from '@/lib/recommend';
+import { takeAnotherIdeaRequest } from '@/state/another-idea';
+import { useAppState } from '@/state/app-state';
 import { usePreviousStepOnBack } from '@/state/use-previous-step-on-back';
 import { color, radius, space } from '@/theme';
 
@@ -15,6 +17,9 @@ const relaxedLabel = { company: 'companhia', place: 'ambiente', energy: 'energia
 /**
  * "Me tira do sofá" — spec §4.3. At most 4 choices (fewer when an intent preset
  * already answered one), then ONE idea at a time: Bora · Outra · Guardar.
+ * "Bora" opens the step view (screen 08). "Outra" never penalises (spec §20): nothing is
+ * recorded about the skipped idea. Her §6 feedback orders and filters the ideas
+ * (src/lib/recommend.ts), read once per round so the list does not reshuffle under her.
  */
 export default function Sofa() {
   const { preset } = useLocalSearchParams<{ preset?: Preset }>();
@@ -30,10 +35,13 @@ export default function Sofa() {
     setStepState(n);
   }, []);
   const h1 = useRef<Text>(null);
-  const [saveFailed, setSaveFailed] = useState(false);
   const [seed, setSeed] = useState(() => Date.now());
   const [index, setIndex] = useState(0);
-  const { isSaved, toggle } = useSaved();
+  const { feedback } = useAppState();
+  // The answers this round of ideas was built with — taken when the questions are answered.
+  const [roundFeedback, setRoundFeedback] = useState(feedback);
+  // A stale "outra ideia" request from a sofa screen that is gone must not skip this one's first idea.
+  useState(() => takeAnotherIdeaRequest());
 
   const done = step >= pending.length;
 
@@ -42,17 +50,41 @@ export default function Sofa() {
   // result screen, back leaves normally.
   usePreviousStepOnBack(!done && step > 0, () => setStep(Math.max(0, stepRef.current - 1)));
   useFocusOnChange(h1, done ? `idea-${index}-${seed}` : step, done ? undefined : `${step + 1} de ${pending.length}`);
-  const result = useMemo(() => {
-    if (!done) return null;
-    const m = match(choices, base.category);
-    return { ...m, items: shuffle(m.items, seed) };
-  }, [done, choices, base.category, seed]);
+  const result = useMemo(
+    () => (done ? recommend(choices, base.category, roundFeedback, seed) : null),
+    [done, choices, base.category, roundFeedback, seed],
+  );
+  const current = result && result.items.length > 0 ? result.items[index % result.items.length] : undefined;
+  const bookmark = useBookmark(current?.activityId ?? '');
+  const { reset: resetBookmark } = bookmark;
+
+  const nextIdea = useCallback(() => {
+    resetBookmark();
+    setIndex((i) => i + 1);
+  }, [resetBookmark]);
+
+  // "Outra ideia" pressed in the step view she opened from here: show the next idea on return.
+  useFocusEffect(
+    useCallback(() => {
+      if (done && takeAnotherIdeaRequest()) nextIdea();
+    }, [done, nextIdea]),
+  );
+
+  const restart = () => {
+    resetBookmark();
+    setChoices(base.choices);
+    setStep(0);
+    setIndex(0);
+    setSeed(Date.now());
+    setRoundFeedback(feedback);
+  };
 
   if (!done) {
     const q = pending[step];
     const answer = (value: string) => {
       if (stepRef.current !== step) return; // stale double-tap
       setChoices((c) => ({ ...c, [q.key]: value }));
+      setRoundFeedback(feedback);
       setStep(step + 1);
     };
     return (
@@ -77,48 +109,42 @@ export default function Sofa() {
   }
 
   const items = result!.items;
-  if (items.length === 0) {
+  if (!current) {
+    const someUnsuited = Object.values(roundFeedback).includes('nao-combina');
     return (
       <Screen edges={['top', 'bottom']}>
         <BackBar />
         <AppText variant="h1">Ainda não há ideias aqui</AppText>
         <AppText variant="body" color="textBody">
           O catálogo desta versão ainda é pequeno. Tente outras escolhas.
+          {someUnsuited ? ' As atividades que você marcou como “não combina comigo” ficam de fora; dá para mudar isso em Preferências.' : ''}
         </AppText>
-        <Button label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); setSeed(Date.now()); }} />
+        <Button label="Escolher de novo" onPress={restart} />
       </Screen>
     );
   }
 
-  const a = items[index % items.length];
-  const saved = isSaved(a.activityId);
-  const toggleSaved = () => {
-    setSaveFailed(false);
-    toggle(a.activityId).catch((e) => {
-      console.error('[storage] could not update saved items', e);
-      setSaveFailed(true);
-      announce(saveFailedText);
-    });
-  };
+  const a = current;
   return (
     <Screen
       key={`idea-${a.activityId}`}
       edges={['top', 'bottom']}
       footer={
         <View style={styles.actions}>
-          <Button label="Bora" arrow fullWidth onPress={() => router.push({ pathname: '/atividade/[id]', params: { id: a.activityId, from: 'sofa' } })} />
+          <Button
+            label="Bora"
+            arrow
+            fullWidth
+            onPress={() => router.push({ pathname: '/atividade/[id]/passos', params: { id: a.activityId, from: 'sofa' } })}
+          />
           <View style={styles.secondary}>
-            <Button variant="quiet" label="Outra ideia" onPress={() => { setSaveFailed(false); setIndex((i) => i + 1); }} disabled={items.length < 2} />
-            <Button variant="quiet" label="Escolher de novo" onPress={() => { setSaveFailed(false); setChoices(base.choices); setStep(0); setIndex(0); setSeed(Date.now()); }} />
+            <Button variant="quiet" label="Outra ideia" onPress={nextIdea} disabled={items.length < 2} />
+            <Button variant="quiet" label="Escolher de novo" onPress={restart} />
           </View>
         </View>
       }>
-      <BackBar right={<IconButton icon={Icons.Bookmark} label={saved ? 'Remover dos salvos' : 'Guardar'} selected={saved} onPress={toggleSaved} />} />
-      {saveFailed && (
-        <AppText variant="label" color="error" accessibilityLiveRegion="assertive">
-          {saveFailedText}
-        </AppText>
-      )}
+      <BackBar right={bookmark.button} />
+      {bookmark.error}
       {result!.relaxed.length > 0 && (
         <View style={styles.note}>
           <AppText variant="caption" color="text">

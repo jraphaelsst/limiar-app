@@ -11,6 +11,7 @@
  */
 import { isValidGameAChoice, type GameAChoices } from '@/data/games';
 
+import { isFeedbackMap, type Feedback, type FeedbackMap } from './feedback';
 import { isPrefs, isValidDateString, isValidInterestPick, type EditablePrefs, type Prefs } from './prefs';
 import { KEYS, clearAll, load, save } from './storage';
 
@@ -61,9 +62,10 @@ export type Snapshot = {
   prefs: Prefs | undefined;
   savedIds: readonly string[];
   gameAResults: readonly SavedGameAResult[];
+  feedback: FeedbackMap;
 };
 
-const empty: Snapshot = { prefs: undefined, savedIds: [], gameAResults: [] };
+const empty: Snapshot = { prefs: undefined, savedIds: [], gameAResults: [], feedback: {} };
 
 /** `idle`: no other write is waiting in the queue after this one. */
 export type CommitListener = (snapshot: Snapshot, info: { idle: boolean }) => void;
@@ -100,12 +102,13 @@ export function createAppStore(onCommit: CommitListener = () => {}) {
     init(): Promise<Snapshot> {
       return write(async () => {
         try {
-          const [prefs, savedIds, gameAResults] = await Promise.all([
+          const [prefs, savedIds, gameAResults, feedback] = await Promise.all([
             load(KEYS.prefs, isPrefs),
             load(KEYS.saved, isIdList),
             load(KEYS.gameAResults, isGameAResults),
+            load(KEYS.feedback, isFeedbackMap),
           ]);
-          return { prefs, savedIds: savedIds ?? [], gameAResults: gameAResults ?? [] };
+          return { prefs, savedIds: savedIds ?? [], gameAResults: gameAResults ?? [], feedback: feedback ?? {} };
         } catch (e) {
           console.error('[storage] could not read the stored data at startup; starting empty.', e);
           return empty;
@@ -160,6 +163,30 @@ export function createAppStore(onCommit: CommitListener = () => {}) {
         const gameAResults = cur.gameAResults.filter((r) => r.savedAt !== savedAt);
         await save(KEYS.gameAResults, gameAResults);
         return { ...cur, gameAResults };
+      });
+    },
+
+    /**
+     * Spec §6 — sets her answer about one activity, or removes it (`undefined`). Idempotent:
+     * the caller decides from what she tapped, so a repeated tap writes nothing.
+     */
+    setFeedback(id: string, value: Feedback | undefined): Promise<Snapshot> {
+      return write(async (cur) => {
+        if (cur.feedback[id] === value) return cur;
+        const feedback: Record<string, Feedback> = { ...cur.feedback };
+        if (value === undefined) delete feedback[id];
+        else feedback[id] = value;
+        await save(KEYS.feedback, feedback);
+        return { ...cur, feedback };
+      });
+    },
+
+    /** Removes every feedback answer (Preferências "Remover todas"); the rest is kept. */
+    clearFeedback(): Promise<Snapshot> {
+      return write(async (cur) => {
+        if (Object.keys(cur.feedback).length === 0) return cur;
+        await save(KEYS.feedback, {});
+        return { ...cur, feedback: {} };
       });
     },
 

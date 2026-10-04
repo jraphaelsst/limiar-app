@@ -14,6 +14,14 @@ export type PlaceChoice = 'casa' | 'fora' | 'tanto-faz';
 export type CompanyChoice = 'solo' | 'companhia' | 'tanto-faz';
 export type Preset = 'fazer' | 'criar' | 'sair' | 'aprender' | 'sem-ideia';
 
+/**
+ * Spec §6 — the only feedback the app keeps about an activity, chosen explicitly by her.
+ * It changes the ORDER of suggestions and nothing else: no profile, nothing inferred.
+ */
+export type Feedback = 'mais' | 'menos' | 'nao-combina';
+/** Activity id → her answer. One answer per activity; removing it means "no answer". */
+export type FeedbackMap = Readonly<Record<string, Feedback>>;
+
 export type Choices = {
   time?: TimeChoice;
   energy?: EnergyChoice;
@@ -131,4 +139,78 @@ export function shuffle<T>(items: readonly T[], seed: number): T[] {
     [out[i], out[j]] = [out[j], out[i]];
   }
   return out;
+}
+
+/** Activities she marked "não combina comigo" never come back as a suggestion. */
+export function withoutUnsuited(pool: readonly Activity[], feedback: FeedbackMap): Activity[] {
+  return pool.filter((a) => feedback[a.activityId] !== 'nao-combina');
+}
+
+/**
+ * Per category: +1 for each "mais disso", −1 for each "menos disso" on an activity of that
+ * category (looked up in `catalog`; answers about activities no longer in it count for nothing).
+ * "Não combina comigo" excludes that one activity and does not touch its category.
+ */
+export function categoryWeights(feedback: FeedbackMap, catalog: readonly Activity[] = activities): Map<Category, number> {
+  const out = new Map<Category, number>();
+  for (const a of catalog) {
+    const f = feedback[a.activityId];
+    if (f === 'mais' || f === 'menos') out.set(a.category, (out.get(a.category) ?? 0) + (f === 'mais' ? 1 : -1));
+  }
+  return out;
+}
+
+/**
+ * Stable sort by category weight, highest first: within the same weight the incoming order
+ * (the caller's shuffle) is kept, so variety survives and the result stays deterministic.
+ * A down-weighted category moves to the end — it is never removed.
+ */
+export function rankByFeedback(items: readonly Activity[], feedback: FeedbackMap, catalog: readonly Activity[] = activities): Activity[] {
+  const w = categoryWeights(feedback, catalog);
+  return items
+    .map((a, i) => ({ a, i, w: w.get(a.category) ?? 0 }))
+    .sort((x, y) => y.w - x.w || x.i - y.i)
+    .map((x) => x.a);
+}
+
+/**
+ * "Me tira do sofá" result: drop "não combina", match (relaxing if needed), shuffle with the
+ * caller's seed, then order by her "mais/menos disso". Pure and deterministic.
+ */
+export function recommend(
+  choices: Choices,
+  category: Category | undefined,
+  feedback: FeedbackMap,
+  seed: number,
+  pool: readonly Activity[] = activities,
+): Match {
+  const m = match(choices, category, withoutUnsuited(pool, feedback));
+  return { ...m, items: rankByFeedback(shuffle(m.items, seed), feedback, pool) };
+}
+
+/**
+ * Home "Para você hoje": two ideas shaped by what she chose in onboarding (interest
+ * categories, available time). Falls back to short, low-energy ideas when nothing was chosen
+ * or nothing matches. Her feedback applies here too: "não combina" never shows, and
+ * "mais/menos disso" order what fits.
+ */
+export function pickToday(
+  interestCats: ReadonlySet<Category>,
+  availability: TimeChoice | undefined,
+  feedback: FeedbackMap,
+  pool: readonly Activity[] = activities,
+): readonly Activity[] {
+  const cap = availability ? timeCap[availability] : Infinity;
+  const usable = withoutUnsuited(pool, feedback).filter((a) => a.reviewStatus !== 'retirado');
+  const fits = rankByFeedback(
+    usable.filter((a) => a.durationMin[0] <= cap && (interestCats.size === 0 || interestCats.has(a.category))),
+    feedback,
+    pool,
+  );
+  const fallback = rankByFeedback(
+    usable.filter((a) => a.energy === 'baixa' && a.durationMin[1] <= 15 && !fits.includes(a)),
+    feedback,
+    pool,
+  );
+  return (fits.length >= 2 ? fits : [...fits, ...fallback]).slice(0, 2);
 }
