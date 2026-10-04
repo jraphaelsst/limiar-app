@@ -3,6 +3,7 @@ import { usePreventRemove, type NavigationAction } from 'expo-router/react-navig
 import { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { FeedbackList } from '@/components/FeedbackList';
 import { AppText, BackBar, Button, OptionPill, Screen } from '@/components/ui';
 import { announce } from '@/lib/a11y';
 import type { TimeChoice } from '@/lib/recommend';
@@ -25,7 +26,8 @@ const timeQuestion = 'Quanto tempo livre costuma aparecer?';
  * Spec screen 16 — change the onboarding choices later (spec §6: only what she
  * chose explicitly). Same options and 3–5-or-none rule as onboarding; nothing
  * is written until "Salvar". Leaving with unsaved changes (any back path) asks
- * first, in the screen — RN `Alert` does nothing on web.
+ * first, in the screen — RN `Alert` does nothing on web. Her §6 answers about
+ * activities are listed here too (spec §10.3: see what is saved) and change at once.
  */
 export default function Preferencias() {
   const { prefs, updatePrefs } = useAppState();
@@ -139,6 +141,8 @@ export default function Preferencias() {
           <OptionPill label="Sem preferência" selected={availability === undefined} onPress={() => pickTime(undefined)} />
         </View>
       </View>
+
+      <FeedbackList />
     </Screen>
   );
 }

@@ -44,7 +44,9 @@ function Routes() {
       <Stack.Protected guard={onboarded}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="sofa" />
-        <Stack.Screen name="atividade/[id]" />
+        <Stack.Screen name="atividade/[id]/index" />
+        <Stack.Screen name="atividade/[id]/passos" />
+        <Stack.Screen name="atividade/[id]/concluida" />
         <Stack.Screen name="atividades" />
         <Stack.Screen name="preferencias" />
         <Stack.Screen name="jogos" />
