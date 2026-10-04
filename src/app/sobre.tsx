@@ -19,6 +19,7 @@ export default function Sobre() {
         <CheckItem mark="dot" text="Não faz diagnóstico nem avaliação psicológica." />
         <CheckItem mark="dot" text="Não é serviço de emergência." />
       </View>
+      <AppText variant="label">Conteúdo editorial de Mônica Tangerino, autora.</AppText>
       <AppText variant="bodySmall" color="textBody">
         Conteúdo editorial inspirado em estudos sobre vida adulta, relações e reflexão. As atividades e suas fontes estão em revisão.
       </AppText>
