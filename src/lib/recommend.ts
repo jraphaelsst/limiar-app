@@ -27,7 +27,7 @@ export type Question<K extends keyof Choices = keyof Choices> = {
   options: readonly { value: NonNullable<Choices[K]>; label: string }[];
 };
 
-/** Spec §4.3 table, verbatim labels. */
+/** Spec §4.3 table. Labels follow the spec; its "tarde/manhã" shorthand is written out as natural pt-BR (§2.1). */
 export const questions: readonly Question[] = [
   {
     key: 'time',

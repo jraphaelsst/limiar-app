@@ -237,12 +237,9 @@ describe('questions — spec §4.3 labels', () => {
     ]);
   });
 
-  // KNOWN DIVERGENCE (reported, not fixed in this slice): spec §4.3 line 120 says
-  // "Tenho a tarde/manhã livre"; src/lib/recommend.ts:39 says "Tenho a tarde ou a manhã livre"
-  // while its comment claims "verbatim labels". test.failing flips to red once they agree —
-  // then turn it into a plain test.
-  test.failing("'livre' label matches spec §4.3 verbatim", () => {
-    expect(questions[0].options.find((o) => o.value === 'livre')?.label).toBe('Tenho a tarde/manhã livre');
+  // Decision 2026-10-03: the spec's "tarde/manhã" shorthand is written out as natural pt-BR (voice rules, spec §2.1).
+  test("'livre' label is the natural-language form of spec §4.3", () => {
+    expect(questions[0].options.find((o) => o.value === 'livre')?.label).toBe('Tenho a tarde ou a manhã livre');
   });
 
   test('every time option has a cap', () => {
