@@ -3,6 +3,7 @@ import { Platform, Share, StyleSheet, View } from 'react-native';
 
 import { AppText, BackBar, Button, CheckItem, Screen } from '@/components/ui';
 import { announce } from '@/lib/a11y';
+import { canShare, isShareCancel } from '@/lib/share';
 import { buildExportText, useAppState } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
@@ -15,11 +16,6 @@ const statusText: Record<Exclude<ExportStatus, 'idle'>, string> = {
   failed: 'Não foi possível abrir o compartilhamento. O texto está abaixo para você copiar.',
   unsupported: 'Este navegador não compartilha direto. Selecione e copie o texto abaixo.',
 };
-
-/** Web without the Web Share API (most desktop browsers): skip straight to the copyable text. */
-function canShare(): boolean {
-  return Platform.OS !== 'web' || (typeof navigator !== 'undefined' && typeof navigator.share === 'function');
-}
 
 /**
  * Spec screen 17 — what THIS build stores, stated exactly, plus export (§10.3).
@@ -59,8 +55,8 @@ export default function Privacidade() {
       // Android always reports sharedAction, even when the sheet is closed: say nothing rather than claim a send.
       else show(Platform.OS === 'android' ? 'idle' : 'shared');
     } catch (e) {
-      if (e instanceof Error && e.name === 'AbortError') {
-        show('cancelled'); // web: navigator.share rejects with AbortError when the sheet is dismissed
+      if (isShareCancel(e)) {
+        show('cancelled');
         return;
       }
       console.error('[privacidade] export share failed', e);
