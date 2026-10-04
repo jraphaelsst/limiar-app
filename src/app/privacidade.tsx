@@ -74,6 +74,7 @@ export default function Privacidade() {
       <View style={styles.block}>
         <AppText variant="h3">O que fica guardado</AppText>
         <CheckItem text="A confirmação de que você tem 18 anos ou mais." />
+        <CheckItem text="A data em que você começou a usar o app." />
         <CheckItem text="Os interesses e o tempo livre que você escolheu, se escolheu. Você pode mudar isso em Perfil, na opção Preferências." />
         <CheckItem text="As atividades que você salvou." />
         <CheckItem text="Os resultados do jogo “Ainda gosto disso?” que você escolheu guardar." />
@@ -88,7 +89,7 @@ export default function Privacidade() {
         <View style={styles.block}>
           <AppText variant="h3">Exportar seus dados</AppText>
           <AppText variant="bodySmall" color="textBody">
-            Gera um texto com suas escolhas e os títulos das atividades salvas. Você escolhe para onde enviar, ou cancela. Uma cópia
+            Gera um texto com suas escolhas, os títulos das atividades salvas e os resultados de jogo que você guardou. Você escolhe para onde enviar, ou cancela. Uma cópia
             enviada fica com quem a recebe: apagar os dados aqui não apaga essa cópia.
           </AppText>
           <View style={styles.actions}>

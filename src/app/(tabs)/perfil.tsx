@@ -41,7 +41,7 @@ export default function Perfil() {
         <View style={styles.confirm} accessibilityLiveRegion="polite">
           <AppText variant="h3">Apagar tudo deste aparelho?</AppText>
           <AppText variant="bodySmall" color="textBody">
-            Suas escolhas e atividades salvas serão apagadas, e o app volta para as boas-vindas. Não dá para desfazer.
+            Suas escolhas, atividades salvas e resultados de jogos guardados serão apagados, e o app volta para as boas-vindas. Não dá para desfazer.
           </AppText>
           <View style={styles.row}>
             <Button label="Apagar" onPress={erase} />

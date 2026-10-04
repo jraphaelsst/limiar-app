@@ -70,14 +70,14 @@ export const themes: Record<ThemeId, { word: string; preset?: DirectionPreset }>
   natureza: { word: 'natureza', preset: 'sair' },
   cidade: { word: 'cidade', preset: 'sair' },
   aprendizado: { word: 'aprendizado', preset: 'aprender' },
-  criacao: { word: 'trabalho manual', preset: 'criar' },
+  criacao: { word: 'fazer com as mãos', preset: 'criar' },
   cultura: { word: 'cultura' },
   companhia: { word: 'companhia' },
   'tempo-so': { word: 'tempo sozinha' },
   planejamento: { word: 'planejamento' },
   improviso: { word: 'improviso' },
-  troca: { word: 'troca com outras pessoas' },
-  calma: { word: 'calma' },
+  troca: { word: 'ensinar' },
+  calma: { word: 'silêncio' },
   passeios: { word: 'passeios', preset: 'sair' },
 };
 
@@ -179,17 +179,17 @@ export type RoleCard = { id: string; text: string; reviewStatus: ReviewStatus };
 const card = (id: string, text: string): RoleCard => ({ id, text, reviewStatus: 'rascunho' });
 
 export const roleCards: readonly RoleCard[] = [
-  card('almoco-domingo', 'Organizar o almoço de domingo'),
+  card('encontros-familia', 'Organizar os encontros de família'),
   card('aniversarios', 'Ser quem lembra os aniversários'),
-  card('cozinhar-todos', 'Cozinhar para a casa toda'),
-  card('papelada', 'Cuidar da papelada da casa'),
-  card('casa-visitas', 'Deixar a casa arrumada antes de visitas'),
+  card('cozinhar', 'Cozinhar no dia a dia'),
+  card('amigos', 'Ser quem organiza os encontros com amigos'),
+  card('mesmo-caminho', 'Fazer sempre o mesmo caminho'),
   card('mensagens', 'Responder mensagens assim que chegam'),
   card('caminhada', 'Caminhar sempre no mesmo horário'),
   card('viagens', 'Planejar as viagens'),
   card('serie', 'Ver a mesma série ou novela todo dia'),
   card('conversa', 'Ser quem as pessoas procuram para conversar'),
-  card('presentes', 'Comprar os presentes de todo mundo'),
+  card('presentes', 'Escolher presentes'),
   card('plantas', 'Cuidar das plantas'),
 ];
 
@@ -198,8 +198,8 @@ export const roleCards: readonly RoleCard[] = [
  * question, never an answer or interpretation. Nothing typed is asked for or kept.
  */
 export const reflectionQuestion: Record<Stance, string> = {
-  gosto: 'O que exatamente nisso dá gosto? Haveria outro lugar da sua vida onde isso também caberia?',
+  gosto: 'O que exatamente nisso dá gosto?',
   habito: 'Se isso ficasse de lado por uma semana, o que você notaria?',
-  esperam: 'De onde vem essa expectativa? Ela ainda faz sentido do jeito que está hoje?',
+  esperam: 'Se dependesse só de você, isso continuaria igual, mudaria ou sairia da rotina?',
   'nao-sei': 'O que precisaria ser diferente para essa resposta ficar mais clara?',
 };

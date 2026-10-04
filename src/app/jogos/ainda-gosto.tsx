@@ -124,7 +124,7 @@ export default function AindaGosto() {
           {nothingPicked
             ? 'Todas as rodadas foram puladas. Dá para jogar de novo quando quiser, ou procurar uma atividade agora.'
             : r.themes.length > 0
-              ? `${patternSentence(r.themes)} Quer explorar atividades nessa direção?`
+              ? `${patternSentence(r.themes)} ${r.preset ? 'Quer explorar atividades nessa direção?' : 'Quer procurar uma atividade para agora?'}`
               : 'As escolhas de hoje ficaram variadas, sem um tema que se repetisse. Quer procurar uma atividade para agora?'}
         </AppText>
       </View>
