@@ -1,0 +1,15 @@
+{
+  "formato": "noctus.agents-lock/v1",
+  "agents": [
+    {
+      "key": "mobile-dev",
+      "versao": "0.2.0",
+      "sha": "34e059ba4efe2d1cf3c6665caecec325137e29b2830e52552a11e6c3307ee88e"
+    },
+    {
+      "key": "nos-no-limiar",
+      "versao": "0.2.0",
+      "sha": "5335b894a95ca9e06a5c97aa22d86ddad974263ed36f60f1345d4682977ff155"
+    }
+  ]
+}

@@ -1,3 +1,10 @@
+---
+titulo: "UI: tokens, typography, icons"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/mobile-dev/knowledge/03-ui-typography-icons.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # UI: tokens, typography, icons
 
 ## Tokens first

@@ -1,3 +1,10 @@
+---
+titulo: "Path to the stores — status: NOT YET EXERCISED"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/mobile-dev/knowledge/07-release-path.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Path to the stores — status: NOT YET EXERCISED
 
 Everything below is the documented Expo path, not yet done on a real project here. Treat as a plan;

@@ -1,3 +1,10 @@
+---
+titulo: "Produto e escopo"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/nos-no-limiar/knowledge/01-produto-e-escopo.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Produto e escopo
 
 Fonte: `docs/spec/especificacao-mestre-v1.0.md` (§ entre parênteses).

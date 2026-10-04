@@ -1,3 +1,10 @@
+---
+titulo: "Navigation and state"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/mobile-dev/knowledge/04-navigation-state.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Navigation and state
 
 ## Expo Router

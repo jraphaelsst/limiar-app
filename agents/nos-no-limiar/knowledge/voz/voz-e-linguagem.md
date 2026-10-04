@@ -1,3 +1,10 @@
+---
+titulo: "Voz e linguagem do app"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/nos-no-limiar/knowledge/03-voz-e-linguagem.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Voz e linguagem do app
 
 Duas fontes: a **especificação do app** (obrigatória) e a **base editorial da marca** (pasta

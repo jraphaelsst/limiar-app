@@ -1,3 +1,10 @@
+---
+titulo: "Segurança, privacidade e limites regulatórios"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/nos-no-limiar/knowledge/02-seguranca-e-privacidade.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Segurança, privacidade e limites regulatórios
 
 ## Rotas de segurança (§8) — o app não trata crise: interrompe e encaminha
@@ -31,7 +38,7 @@ pós-filtro → resposta. Resposta 80–130 palavras, no máximo 2 caminhos. Nun
 Se o app passar a executar métodos psicológicos como serviço, ou for apresentado como atendimento,
 entra na Resolução CFP 9/2024; finalidade médica → Anvisa RDC 657/2022.
 Nunca chamar jogos de "teste", "avaliação", "triagem", "escala". Nunca "baseado em psicanálise" como
-selo de tratamento. **Atenção extra**: a autora é psicanalista clínica — ver `knowledge/05`.
+selo de tratamento. **Atenção extra**: a autora é psicanalista clínica — ver `o conhecimento marca/monica-e-tese`.
 
 ## Notificações e monetização (§15, §16)
 Notificações: opt-in, desligadas por padrão, no máximo 2–3/semana, sem culpa ("sentimos sua falta"),

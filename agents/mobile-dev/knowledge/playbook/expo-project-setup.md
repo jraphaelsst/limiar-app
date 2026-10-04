@@ -1,3 +1,10 @@
+---
+titulo: "Expo project setup — what actually happened, and the fixes"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/mobile-dev/knowledge/02-expo-project-setup.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Expo project setup — what actually happened, and the fixes
 
 ## Before creating anything: check the machine

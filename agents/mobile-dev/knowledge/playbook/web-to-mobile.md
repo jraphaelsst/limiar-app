@@ -1,3 +1,10 @@
+---
+titulo: "Web → mobile: the mental model"
+tipo: sintese
+proveniencia:
+  origem: "limiar-app agents/mobile-dev/knowledge/01-web-to-mobile.md (v0.1.0)"
+  notas: "Sintetizado em 2026-10-03 a partir da sessão de desenvolvimento do limiar-app."
+---
 # Web → mobile: the mental model
 
 ## What carries over from web
