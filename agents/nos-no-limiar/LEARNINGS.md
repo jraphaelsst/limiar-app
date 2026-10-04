@@ -6,6 +6,7 @@ Tipos: `armadilha` · `prática` · `decisão`. Status: `novo` → `absorvido` (
 
 | Data | Tipo | Aprendizado | Evidência | Status |
 |---|---|---|---|---|
+| 2026-10-04 | prática | Atividade do mundo "filhos adultos" escrita com uma lista de pessoas possíveis (filho, filha, sobrinha, afilhado, amiga, colega) funciona também para quem não tem filhos e não presume distância; e palavras do campo semântico da perda saem até no sentido literal ("horário mais vazio" → "com menos movimento"). O schema não tem campo "mundo": o mundo de cada atividade só existe na folha de revisão | limiar-app src/data/activities.ts act-0025, act-0026, act-0023; docs/content/atividades-lote-1.md | novo |
 | 2026-10-04 | prática | O efeito do feedback é dito na tela com as mesmas regras do código ("Ideias do tipo “Criar” sobem nas sugestões" · "descem, sem sumir" · "sai das sugestões e continua na lista de atividades"); se o algoritmo mudar, esses textos mudam no mesmo commit | limiar-app src/components/ActivityFeedback.tsx × src/lib/recommend.ts | novo |
 | 2026-10-04 | prática | Tela 09 sem o campo "guardar uma frase" enquanto não há camada de segurança: nenhum texto anuncia recurso que não existe; só "Feito", uma linha neutra e o feedback | limiar-app src/components/AfterActivity.tsx | novo |
 | 2026-10-04 | armadilha | Variação (§4.4) é conteúdo da autora: o campo opcional fica vazio em vez de inventado; 14 de 15 sementes estão sem — pendência da Mônica, primeiro as de cozinha/saída (act-0007, 0009, 0012, 0015) | limiar-app src/data/activities.ts | novo |

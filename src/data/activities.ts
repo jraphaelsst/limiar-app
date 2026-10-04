@@ -1,15 +1,21 @@
 /**
- * Activity catalog — spec §5 schema, seeded from spec §5.1 (15 seeds).
+ * Activity catalog — spec §5 schema. Every item is `rascunho` until Mônica approves it
+ * (spec §22 — nothing is published by AI alone; decisions.md 2026-10-04 `nnl-f1-editorial`).
  *
- * Every item is `rascunho`: titles, summaries, time and materials come from the
- * spec; steps and the one variation (act-0003) were written to be faithful to each
- * summary and still need editorial review (spec §22 — nothing is published by AI alone).
+ * act-0001…act-0015 — `seed(...)`: the 15 seeds of spec §5.1. Titles, summaries, time and
+ * materials come from the spec; steps and the one variation (act-0003) were written to be
+ * faithful to each summary. The other 14 seeds have no `variation` ON PURPOSE: variations
+ * of the seeds are Mônica's content and are pending her, first for the ones that involve
+ * going out, walking or the kitchen (act-0007, act-0009, act-0012, act-0015).
  *
- * `variation` (spec §4.4: alternative for low energy or reduced mobility, "quando
- * aplicável") is optional and shown wherever the activity is. The other 14 seeds have
- * none ON PURPOSE: variations are Mônica's content and are not invented here — they are
- * pending her, first for the ones that involve going out, walking or the kitchen
- * (act-0007, act-0009, act-0012, act-0015).
+ * act-0016…act-0030 — `draft(...)`: batch 1 written whole by Claude (2026-10-04), with João's
+ * approval to draft in batches of 15 for Mônica's review. They fill the gaps of the seeds
+ * (organizar / conectar / explorar / refletir, "companhia", energy "alta", mobility
+ * "moderada", ≤10-min items, the "filhos adultos" and "nós dois" worlds). As drafts, their
+ * variations are written too, and are as provisional as the rest. Review sheet with the
+ * world and the gap of each one: docs/content/atividades-lote-1.md.
+ *
+ * Ids are stable and never reused: an activity leaves the catalog by `retirado`, not by deletion.
  */
 
 export type Category = 'criar' | 'aprender' | 'sair' | 'conectar' | 'organizar' | 'explorar' | 'refletir';
@@ -33,7 +39,7 @@ export type Activity = {
   mobility: Mobility;
   materials: readonly string[];
   steps: readonly string[];
-  /** Spec §4.4 — optional; never invented (see header). */
+  /** Spec §4.4 — optional; see the header for who writes it. */
   variation?: string;
   safetyTags: readonly string[];
   sourceNote: string;
@@ -49,6 +55,19 @@ const seed = (a: Omit<Activity, 'sourceNote' | 'reviewStatus' | 'reviewedBy' | '
   reviewedBy: null,
   version: 1,
 });
+
+/** Batch drafts by Claude — same review state as the seeds, different provenance. */
+const draft =
+  (batch: number, date: string) =>
+  (a: Omit<Activity, 'sourceNote' | 'reviewStatus' | 'reviewedBy' | 'version'>): Activity => ({
+    ...a,
+    sourceNote: `Rascunho de Claude (lote ${batch}, ${date}) para revisão da Mônica`,
+    reviewStatus: 'rascunho',
+    reviewedBy: null,
+    version: 1,
+  });
+
+const lote1 = draft(1, '2026-10-04');
 
 export const activities: readonly Activity[] = [
   seed({
@@ -336,6 +355,314 @@ export const activities: readonly Activity[] = [
       'Repare no que aparece pelo caminho.',
     ],
     safetyTags: ['deslocamento'],
+  }),
+  lote1({
+    activityId: 'act-0016',
+    title: 'Uma gaveta por vez',
+    summary: 'Esvaziar uma única gaveta, decidir o que volta para ela e parar por ali.',
+    category: 'organizar',
+    durationMin: [10, 15],
+    energy: 'normal',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'leve',
+    materials: ['Uma gaveta', 'Uma mesa'],
+    steps: [
+      'Escolha uma gaveta pequena, dessas que juntam coisas soltas.',
+      'Tire tudo e espalhe sobre uma mesa.',
+      'Separe em três montes: volta para a gaveta, vai para outro lugar, sai de casa.',
+      'Guarde o que fica. A gaveta de hoje é só essa.',
+    ],
+    variation:
+      'Com pouca energia ou mobilidade reduzida: troque a gaveta por uma caixa, bolsa ou nécessaire que já esteja ao alcance e faça sentada.',
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0017',
+    title: 'A semana numa folha',
+    summary: 'Desenhar a semana numa folha e reservar nela um espaço para algo escolhido por você.',
+    category: 'organizar',
+    durationMin: [10, 10],
+    energy: 'baixa',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Papel', 'Caneta'],
+    steps: [
+      'Divida uma folha em sete colunas, uma para cada dia.',
+      'Anote o que já está marcado: compromissos, horários, tarefas fixas.',
+      'Procure um espaço livre e escreva nele uma coisa que gostaria de fazer.',
+      'Deixe a folha num lugar onde você a veja durante a semana.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0018',
+    title: 'Um canto para o que é seu',
+    summary: 'Liberar um pequeno espaço da casa para algo seu: um livro em andamento, um bordado, uma planta.',
+    category: 'organizar',
+    durationMin: [20, 30],
+    energy: 'normal',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'leve',
+    materials: ['Um canto da casa'],
+    steps: [
+      'Escolha um canto pequeno: uma ponta de mesa, uma prateleira, o lado de uma poltrona.',
+      'Tire o que não precisa ficar ali.',
+      'Coloque uma coisa sua que queira ter à mão: um livro, um caderno, um bordado, uma planta.',
+      'Se mora com outras pessoas, combine que aquele canto fica assim.',
+    ],
+    variation:
+      'Com pouca energia ou mobilidade reduzida: use o espaço que já está ao alcance de onde você costuma sentar, como a mesinha ao lado da poltrona.',
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0019',
+    title: 'Rabisco de um minuto',
+    summary: 'Rabiscar por um minuto sem tentar fazer algo bonito e depois dar um título ao resultado.',
+    category: 'criar',
+    durationMin: [5, 5],
+    energy: 'baixa',
+    environment: 'ambos',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Papel', 'Caneta', 'Relógio ou celular'],
+    steps: [
+      'Pegue papel e caneta e marque um minuto no relógio ou no celular.',
+      'Rabisque sem parar e sem tentar fazer algo bonito.',
+      'Quando o tempo acabar, gire a folha e olhe o rabisco de vários lados.',
+      'Dê um título a ele.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0020',
+    title: 'Paleta de cinco cores',
+    summary: 'Escolher cinco cores para a fase atual e dar a cada uma o nome de uma coisa do dia a dia.',
+    category: 'refletir',
+    durationMin: [10, 15],
+    energy: 'baixa',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Papel', 'Lápis de cor, canetinhas ou o que tiver em casa'],
+    steps: [
+      'Pense na sua vida de agora, do jeito que ela está.',
+      'Escolha cinco cores que combinam com ela.',
+      'Pinte um quadradinho de cada cor numa folha.',
+      'Ao lado de cada cor, escreva uma palavra do dia a dia: café, varanda, domingo, estrada.',
+    ],
+    variation: 'Sem lápis de cor: junte cinco objetos coloridos da casa sobre a mesa e anote uma palavra para cada um.',
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0021',
+    title: 'Mudei de ideia',
+    summary: 'Anotar três coisas sobre as quais você mudou de ideia nos últimos anos e o que pensa delas hoje.',
+    category: 'refletir',
+    durationMin: [10, 10],
+    energy: 'baixa',
+    environment: 'ambos',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Papel e caneta ou celular'],
+    steps: [
+      'Pegue papel e caneta ou abra uma nota no celular.',
+      'Anote três coisas sobre as quais mudou de ideia nos últimos anos: uma comida, um lugar, um costume, um jeito de passar o domingo.',
+      'Ao lado de cada uma, escreva em uma frase o que pensa hoje.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0022',
+    title: 'Museu pela tela',
+    summary: 'Visitar o acervo on-line de um museu que gostaria de conhecer e escolher uma obra.',
+    category: 'explorar',
+    durationMin: [15, 30],
+    energy: 'baixa',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Internet', 'Celular, tablet ou computador'],
+    steps: [
+      'Escolha um museu que gostaria de conhecer, no Brasil ou fora.',
+      'Procure na internet o acervo on-line ou a visita virtual dele.',
+      'Passeie sem roteiro, no seu ritmo.',
+      'Escolha uma obra e anote o nome dela e de quem fez.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0023',
+    title: 'Feira sem lista',
+    summary: 'Percorrer uma feira ou um mercado sem lista de compras, reparando no que não conhece.',
+    category: 'explorar',
+    durationMin: [45, 90],
+    energy: 'alta',
+    environment: 'fora',
+    socialMode: 'ambos',
+    budget: 'baixo',
+    mobility: 'moderada',
+    materials: ['Sair de casa', 'Uma sacola'],
+    steps: [
+      'Escolha uma feira livre ou um mercado municipal que ainda não conhece ou que não visita há tempo.',
+      'Percorra as bancas sem lista de compras.',
+      'Pergunte a quem vende o nome de uma fruta, um tempero ou um peixe que não conhece.',
+      'Se quiser, leve uma coisa pequena para provar em casa.',
+    ],
+    variation:
+      'Com pouca energia ou mobilidade reduzida: vá num horário com menos movimento, escolha um trecho curto ou uma banca só e pare onde houver lugar para sentar.',
+    safetyTags: ['caminhada', 'deslocamento'],
+  }),
+  lote1({
+    activityId: 'act-0024',
+    title: 'Rádio de outra cidade',
+    summary: 'Ouvir por alguns minutos uma rádio ao vivo de uma cidade de outro país.',
+    category: 'explorar',
+    durationMin: [5, 10],
+    energy: 'baixa',
+    environment: 'ambos',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Celular', 'Internet'],
+    steps: [
+      'Escolha uma cidade de outro país que nunca visitou.',
+      'Procure na internet uma rádio ao vivo de lá.',
+      'Ouça alguns minutos do que estiver passando: música, notícia, conversa.',
+      'Anote o nome da cidade e uma coisa que chamou sua atenção.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0025',
+    title: 'O que você anda ouvindo?',
+    summary: 'Pedir a alguém mais jovem uma música, série ou livro de que anda gostando e conhecer a indicação.',
+    category: 'conectar',
+    durationMin: [15, 30],
+    energy: 'baixa',
+    environment: 'ambos',
+    socialMode: 'companhia',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Uma pessoa', 'Celular'],
+    steps: [
+      'Escolha alguém mais jovem com quem tem contato: filho, filha, sobrinha, afilhado, uma colega.',
+      'Pergunte, por mensagem ou pessoalmente, o que essa pessoa anda ouvindo, vendo ou lendo.',
+      'Experimente um pedaço da indicação.',
+      'Se quiser, conte depois uma coisa de que gostou ou que chamou sua atenção.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0026',
+    title: 'Me ensina uma coisa?',
+    summary: 'Pedir a alguém que sabe fazer algo que você não sabe uma aula curta, de até meia hora.',
+    category: 'aprender',
+    durationMin: [20, 40],
+    energy: 'normal',
+    environment: 'ambos',
+    socialMode: 'companhia',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Uma pessoa'],
+    steps: [
+      'Pense em alguém que sabe uma coisa que você não sabe: filho ou filha, amiga, vizinha, alguém do trabalho.',
+      'Peça uma aula curta, de até meia hora: um recurso do celular, um ponto de crochê, um atalho no computador.',
+      'Faça junto com a pessoa, lado a lado ou por chamada de vídeo.',
+      'Anote o passo que quiser lembrar.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0027',
+    title: 'Sorteio de programas',
+    summary: 'Escrever ideias de programas em papeizinhos, sortear um e marcar o dia.',
+    category: 'conectar',
+    durationMin: [10, 15],
+    energy: 'baixa',
+    environment: 'casa',
+    socialMode: 'companhia',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Papel', 'Caneta', 'Uma pessoa'],
+    steps: [
+      'Chame uma pessoa para fazer junto: parceiro ou parceira, amiga, irmã.',
+      'Cada pessoa escreve três programas em papeizinhos, simples ou fora do habitual.',
+      'Dobre os papéis, misture e sorteie um.',
+      'Marquem um dia para fazer.',
+    ],
+    variation: 'Sozinha: escreva seis programas, sorteie um e marque o dia na agenda.',
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0028',
+    title: 'Convite para um café',
+    summary: 'Mandar um convite simples para alguém que você gostaria de conhecer melhor.',
+    category: 'conectar',
+    durationMin: [5, 10],
+    energy: 'baixa',
+    environment: 'ambos',
+    socialMode: 'companhia',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Celular'],
+    steps: [
+      'Pense em alguém que gostaria de conhecer melhor: uma vizinha, uma colega, alguém de um grupo que frequenta.',
+      'Escreva uma mensagem curta com um convite simples: um café, uma volta na praça, uma visita.',
+      'Sugira um ou dois dias possíveis.',
+      'Envie e deixe a resposta chegar no tempo da outra pessoa.',
+    ],
+    safetyTags: [],
+  }),
+  lote1({
+    activityId: 'act-0029',
+    title: 'Carteirinha da biblioteca',
+    summary: 'Ir à biblioteca pública mais perto, fazer o cadastro e sair com um livro.',
+    category: 'sair',
+    durationMin: [30, 60],
+    energy: 'normal',
+    environment: 'fora',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'leve',
+    materials: ['Sair de casa', 'Documento com foto'],
+    steps: [
+      'Procure a biblioteca pública mais perto de você: municipal, estadual ou de um centro cultural.',
+      'Confira o horário e os documentos pedidos para o cadastro.',
+      'Vá até lá e faça a carteirinha.',
+      'Antes de sair, passeie pelas estantes e escolha um livro.',
+    ],
+    variation:
+      'Com pouca energia ou mobilidade reduzida: veja se a biblioteca da sua cidade empresta livros digitais e faça o cadastro pela internet.',
+    safetyTags: ['deslocamento'],
+  }),
+  lote1({
+    activityId: 'act-0030',
+    title: 'Como isso funciona?',
+    summary: 'Escolher um objeto do dia a dia e descobrir como ele funciona.',
+    category: 'aprender',
+    durationMin: [10, 15],
+    energy: 'baixa',
+    environment: 'casa',
+    socialMode: 'solo',
+    budget: 'zero',
+    mobility: 'sentada',
+    materials: ['Internet'],
+    steps: [
+      'Escolha um objeto que você usa sem saber explicar como funciona: zíper, geladeira, controle remoto, código de barras.',
+      'Procure uma explicação curta, em texto ou vídeo.',
+      'Explique com suas palavras, em voz alta ou numa anotação.',
+    ],
+    safetyTags: [],
   }),
 ];
 
