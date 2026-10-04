@@ -11,5 +11,28 @@
       "versao": "0.2.1",
       "sha": "18b9e070ae3ea7ec3b13792f14bbec0ebf36072b7e5a0d8cbf0d8c099ad7cca6"
     }
-  ]
+  ],
+  "project": {
+    "slug": "limiar-app",
+    "fontes": {
+      "docs": [
+        "docs/**/*.md",
+        "CLAUDE.md",
+        "README.md",
+        "agents/README.md"
+      ],
+      "codigo": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "app.json",
+        "package.json",
+        "tsconfig.json"
+      ],
+      "quadro": "docs/design/decision-board.json"
+    },
+    "agentes": [
+      "nos-no-limiar",
+      "mobile-dev"
+    ]
+  }
 }
