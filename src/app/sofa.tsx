@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { usePreventRemove } from 'expo-router/react-navigation';
 import { useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -26,6 +27,12 @@ export default function Sofa() {
   const { isSaved, toggle } = useSaved();
 
   const done = step >= pending.length;
+
+  // Decision 2026-10-03 (board nnl-hardware-back): while answering, "back" means the previous
+  // question. One hook covers every back path — Android hardware back, iOS swipe (native-stack
+  // cancels the native dismiss and sends it here), the BackBar arrow and browser back on web.
+  // At step 0 and on the result screen, back leaves normally.
+  usePreventRemove(!done && step > 0, () => setStep((s) => Math.max(0, s - 1)));
   const result = useMemo(() => {
     if (!done) return null;
     const m = match(choices, base.category);

@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Icons, ListRow, Screen } from '@/components/ui';
-import { useAppState } from '@/state/app-state';
+import { timeLabel, useAppState } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
 
-/** Phase 0 profile: help/safety one tap away (spec §10.3, §16); erase-all per spec §10.3. */
+/** Phase 0 profile: help/safety one tap away (spec §10.3, §16); preferences (screen 16); erase-all per spec §10.3. */
 export default function Perfil() {
-  const { eraseAll } = useAppState();
+  const { prefs, eraseAll } = useAppState();
   const [confirming, setConfirming] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -32,7 +32,8 @@ export default function Perfil() {
       <View style={styles.list}>
         <ListRow icon={Icons.Lifebuoy} title="Ajuda e segurança" subtitle="Contatos de atendimento no Brasil" onPress={() => router.push('/ajuda')} />
         <ListRow icon={Icons.Info} title="Sobre o Nós no Limiar" subtitle="O que o app é e o que não é" onPress={() => router.push('/sobre')} />
-        <ListRow title="Privacidade" subtitle="O que fica guardado e o que não é pedido" onPress={() => router.push('/privacidade')} />
+        <ListRow title="Preferências" subtitle={prefsSummary(prefs?.interests.length ?? 0, timeLabel(prefs?.availability))} onPress={() => router.push('/preferencias')} />
+        <ListRow title="Privacidade" subtitle="O que fica guardado e como exportar" onPress={() => router.push('/privacidade')} />
         {__DEV__ && <ListRow title="Tipografia" subtitle="Somente desenvolvimento" onPress={() => router.push('/tipografia')} />}
       </View>
 
@@ -57,6 +58,12 @@ export default function Perfil() {
       )}
     </Screen>
   );
+}
+
+/** The row shows what is saved now, so a change made in Preferências is visible on return. */
+function prefsSummary(interestCount: number, time: string | undefined): string {
+  const interests = interestCount === 0 ? 'Sem interesses escolhidos' : `${interestCount} interesses`;
+  return `${interests} · ${time ? `tempo livre: ${time}` : 'tempo livre não escolhido'}`;
 }
 
 const styles = StyleSheet.create({
