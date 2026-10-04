@@ -7,6 +7,8 @@ Status: `new` (not yet in knowledge/) → `absorbed` (folded into a knowledge fi
 
 | Date | Kind | Learning | Evidence | Status |
 |---|---|---|---|---|
+| 2026-10-03 | pitfall | `BackHandler` bound on mount keeps firing while another screen is pushed on top (stack screens stay mounted) and swallows that screen's back press; bind in-screen step-back with `useFocusEffect` | limiar-app src/state/use-step-back.ts (games) | new |
+| 2026-10-03 | pitfall | A git worktree with a SYMLINKED `node_modules` breaks verification silently: `expo export` exits 0 but bundles no app routes (expo-router resolves its app root from the real path; no route HTML, bundle without screens) and `tsc` fails on phosphor sources. Use an APFS clone instead (`cp -cR <main>/node_modules <wt>/node_modules`, ~45 s, no extra disk) + copy `expo-env.d.ts` and run `expo start` once to generate `.expo/types` | limiar-app-wt/games session: export 1.1 MB without screens vs 18 route HTML files after the clone | new |
 | 2026-10-03 | pitfall | Default Expo Router tab bar (49 pt) clips 12-pt labels; use 64 pt + bottom inset | limiar-app 6a89db7; knowledge: playbook/navigation-state | absorbed |
 | 2026-10-03 | pitfall | Cormorant Garamond defaults to old-style figures ("192" ≈ "1g2"); force `lining-nums` | limiar-app 6a89db7; knowledge: playbook/ui-typography-icons | absorbed |
 | 2026-10-03 | practice | Phosphor per-icon deep imports cut the web bundle 7.1 MB → 1.4 MB | limiar-app 6a89db7; knowledge: playbook/ui-typography-icons | absorbed |

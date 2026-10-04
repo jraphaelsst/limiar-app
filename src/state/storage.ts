@@ -11,6 +11,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const KEYS = {
   prefs: 'limiar:v1:prefs',
   saved: 'limiar:v1:saved',
+  /** Game A results the user explicitly chose to keep — option ids only, never text. */
+  gameAResults: 'limiar:v1:game-a-results',
 } as const;
 
 type Key = (typeof KEYS)[keyof typeof KEYS];

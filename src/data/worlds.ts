@@ -4,11 +4,11 @@ export type World = {
   title: string;
   description: string;
   /** Destination when the world already has real content in Phase 0; absent ⇒ not pressable yet. */
-  href?: '/atividades';
+  href?: '/atividades' | '/jogos';
 };
 
 export const worlds: readonly World[] = [
-  { id: 'quem-sou', title: 'Quem sou eu agora?', description: 'Gostos, curiosidades e desejos; partes da vida que ficaram pouco usadas.' },
+  { id: 'quem-sou', title: 'Quem sou eu agora?', description: 'Gostos, curiosidades e desejos; partes da vida que ficaram pouco usadas.', href: '/jogos' },
   { id: 'filhos-adultos', title: 'Minha relação com filhos adultos', description: 'Autonomia, proximidade e novas formas de presença.' },
   { id: 'tempo', title: 'O que faço com esse tempo?', description: 'Atividades rápidas, projetos, rotina e curiosidade.' },
   { id: 'nos-dois', title: 'Nós dois agora', description: 'Programas, conversas e descobertas a dois. Também para quem não tem parceiro.' },

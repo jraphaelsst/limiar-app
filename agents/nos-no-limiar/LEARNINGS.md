@@ -6,6 +6,8 @@ Tipos: `armadilha` · `prática` · `decisão`. Status: `novo` → `absorvido` (
 
 | Data | Tipo | Aprendizado | Evidência | Status |
 |---|---|---|---|---|
+| 2026-10-03 | prática | Padrão do Jogo A como lista, não conjugado: "dois temas se repetiram: natureza e aprendizado" — a frase-exemplo da spec ("apareceram bastante X") quebra com temas que não são substantivos simples; resultado guardado não diz "hoje" | limiar-app src/data/games.ts patternSentence | novo |
+| 2026-10-03 | armadilha | Toda nova chave guardada no aparelho torna falsa a lista "O que fica guardado" de privacidade.tsx até ela ser atualizada (veracidade) | limiar-app src/state/storage.ts gameAResults × src/app/privacidade.tsx | novo |
 | 2026-10-03 | decisão | Acentos altos do Cormorant aceitos como caráter da marca | decisions.md; conhecimento: produto/identidade-visual | absorvido |
 | 2026-10-03 | decisão | Boas-vindas sem fotografia (pluralidade, procedência da imagem, coerência com colagem) | decisions.md; conhecimento: produto/identidade-visual | absorvido |
 | 2026-10-03 | decisão | Nos conflitos C1–C12, a spec vence por padrão; mockup manda em aparência | decisions.md; conhecimento: produto/produto-e-escopo | absorvido |
