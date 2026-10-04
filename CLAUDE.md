@@ -1,0 +1,16 @@
+# limiar-app — Nós no Limiar
+
+Expo (SDK 57) + Expo Router + TypeScript app. Source of truth for the product: `docs/spec/especificacao-mestre-v1.0.md`
+(its safety, privacy and scope rules win any conflict until human review). Decisions: `docs/design/decisions.md`.
+Visual values: `src/theme/` (never literal colours/sizes/fonts in components).
+
+## Agents — consult them, and teach them
+- **`nos-no-limiar`** (pt-BR, read-only): consult before shipping any user-facing text, screen, flow or activity.
+- **`mobile-dev`** (en, read-only): consult on mobile setup, navigation, state, typography, accessibility, device issues.
+- **Learning is part of done:** when a change discovers or decides something non-obvious, append a row to the
+  matching `agents/<key>/LEARNINGS.md` **in the same commit** (format in `agents/README.md`).
+- Decisions that need João or Mônica go to the Decision Board (https://claude.ai/artifact/HKV3ETARxcEojhpwGjsmTf),
+  not into code as assumptions; once decided, record them in `docs/design/decisions.md`.
+
+## Verify before claiming done
+`npx tsc --noEmit` → `CI=1 npx expo export --platform web --output-dir <tmp>` → device (Expo Go). Say which ran.
