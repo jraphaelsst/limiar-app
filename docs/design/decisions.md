@@ -30,6 +30,9 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-03 | Mônica credited in-app as **author only** ("Conteúdo editorial de Mônica Tangerino, autora"); no clinical credential until legal review | Claude, delegated by João — Mônica may reopen | spec §1.5, §9; board `nnl-monica-credential` |
 | 2026-10-03 | Mônica's thesis enters the app as **background only** (limiar, habitável, reconhecimento) — never suffering/clinical framing | Claude, delegated by João — Mônica may reopen | board `nnl-thesis-use` |
 
+| 2026-10-04 | Phase 1 runs **without accounts** (guest mode): everything personal stays on the device | Claude, delegated by João | spec §10.1 minimisation; `docs/plan/fase-1-mvp.md` D1 |
+| 2026-10-04 | Saved text (reflections, post-activity phrases) lives **only on the device** in Phase 1 | Claude, delegated by João | removes sensitive text from any server; plan D2 |
+| 2026-10-04 | AI backend = own **stateless** service on the NoctusAI seed, built against a Fake provider; **not live** until the human decisions H1–H4 (provider/DPA/region, controller, legal opinion, editorial reviewer) | Claude, delegated by João | Agent Studio rejected as engine (personal-plan runtime, model-chosen retrieval, no DPA); plan D3 |
 
 ### Rationale — welcome screen without photography
 
