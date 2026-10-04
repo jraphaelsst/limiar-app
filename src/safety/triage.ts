@@ -20,12 +20,24 @@ export type TriageResult = {
 };
 
 /** Word the idiom masking leaves in place of a neutralised death/kill word. */
-const MASCARA = 'xidiomax';
-const PALAVRA_MASCARAVEL = /^(?:mor|mat|suicid|overdose)/;
-const NEGADORES = new Set(['nao', 'nunca', 'jamais', 'nem']);
+export const MASCARA = 'xidiomax';
+/** Inside an idiom match, a word matching this is replaced by `MASCARA`. */
+export const PALAVRA_MASCARAVEL = '^(?:mor|mat|suicid|overdose)';
+/** The word right before a match that caps a `negavel` rule at amarelo. */
+export const NEGADORES: readonly string[] = ['jamais', 'nao', 'nem', 'nunca'];
 
-const ORDEM_NIVEL: Record<Nivel, number> = { verde: 0, amarelo: 1, violencia: 2, vermelho: 3 };
-const ORDEM_SINAL: readonly Sinal[] = ['autolesao', 'violencia', 'sofrimento_persistente', 'dependencia_do_app'];
+/** A negated match counts at this level, under the rule id + this suffix. */
+export const NIVEL_NEGADO = 'amarelo' satisfies Nivel;
+export const SUFIXO_NEGADA = ':negada';
+
+export const ORDEM_NIVEL: Readonly<Record<Nivel, number>> = { verde: 0, amarelo: 1, violencia: 2, vermelho: 3 };
+export const ORDEM_SINAL: readonly Sinal[] = ['autolesao', 'violencia', 'sofrimento_persistente', 'dependencia_do_app'];
+
+/** Every pattern is matched whole, on word boundaries: `ENVELOPE[0] + squeezePattern(padrao) + ENVELOPE[1]`. */
+export const ENVELOPE: readonly [string, string] = [String.raw`\b(?:`, String.raw`)\b`];
+
+const RE_PALAVRA_MASCARAVEL = new RegExp(PALAVRA_MASCARAVEL);
+const CONJUNTO_NEGADORES: ReadonlySet<string> = new Set(NEGADORES);
 
 /**
  * Collapse doubled letters in a pattern exactly as `normalize` does in the text, without
@@ -49,8 +61,13 @@ function squeezePattern(source: string): string {
   return out;
 }
 
+/** The regex source the engine runs for a rule/idiom pattern (squeezed + wrapped). */
+export function fonteCompilada(padrao: string): string {
+  return ENVELOPE[0] + squeezePattern(padrao) + ENVELOPE[1];
+}
+
 function compile(padrao: string): RegExp {
-  return new RegExp(String.raw`\b(?:${squeezePattern(padrao)})\b`, 'g');
+  return new RegExp(fonteCompilada(padrao), 'g');
 }
 
 type Compilada = { regra: Regra; re: RegExp };
@@ -64,7 +81,7 @@ function mascararIdiomas(texto: string): string {
     t = t.replace(re, (trecho) =>
       trecho
         .split(' ')
-        .map((w) => (PALAVRA_MASCARAVEL.test(w) ? MASCARA : w))
+        .map((w) => (RE_PALAVRA_MASCARAVEL.test(w) ? MASCARA : w))
         .join(' '),
     );
   }
@@ -75,7 +92,7 @@ function mascararIdiomas(texto: string): string {
 function negadoEm(texto: string, index: number): boolean {
   const antes = texto.slice(0, index).trimEnd();
   const ultima = antes.slice(antes.lastIndexOf(' ') + 1);
-  return NEGADORES.has(ultima);
+  return CONJUNTO_NEGADORES.has(ultima);
 }
 
 const VERDE: TriageResult = Object.freeze({ nivel: 'verde', sinais: Object.freeze([]), regras: Object.freeze([]), versao: VERSAO_TRIAGEM });
@@ -96,7 +113,7 @@ export function triage(text: string): TriageResult {
     }
     if (plena) acertos.push({ regra, nivel: regra.nivel, id: regra.id });
     // A negation never makes a risk phrase green: it caps the rule at amarelo (spec §7.1, §8.2).
-    else if (negada) acertos.push({ regra, nivel: 'amarelo', id: `${regra.id}:negada` });
+    else if (negada) acertos.push({ regra, nivel: NIVEL_NEGADO, id: regra.id + SUFIXO_NEGADA });
   }
 
   const especificos = acertos.filter((a) => !a.regra.rede);
@@ -115,7 +132,7 @@ export function triage(text: string): TriageResult {
 }
 
 /** Every id `triage` can emit — for audits and for the test that `regras` never carries text. */
-export const IDS_DE_REGRA: ReadonlySet<string> = new Set(REGRAS.flatMap((r) => [r.id, `${r.id}:negada`]));
+export const IDS_DE_REGRA: ReadonlySet<string> = new Set(REGRAS.flatMap((r) => [r.id, r.id + SUFIXO_NEGADA]));
 
 /** Exposed for tests only: the matching form after idiom masking. Never log its output. */
 export function textoParaRegras(text: string): string {

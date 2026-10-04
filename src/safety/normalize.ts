@@ -15,7 +15,7 @@
  *     emoji and extra spaces become single spaces.
  */
 
-const ACCENTS: Record<string, string> = {
+export const ACCENTS: Readonly<Record<string, string>> = {
   à: 'a', á: 'a', â: 'a', ã: 'a', ä: 'a', å: 'a',
   è: 'e', é: 'e', ê: 'e', ë: 'e',
   ì: 'i', í: 'i', î: 'i', ï: 'i',
@@ -24,7 +24,7 @@ const ACCENTS: Record<string, string> = {
   ç: 'c', ñ: 'n', ý: 'y', ÿ: 'y',
 };
 
-const LEET: Record<string, string> = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a' };
+export const LEET: Readonly<Record<string, string>> = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a' };
 
 /**
  * Chat shorthand common in pt-BR. Looked up on the raw token first (so "qq" →
@@ -32,7 +32,7 @@ const LEET: Record<string, string> = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '
  * ("vcc" → "vc" → "voce", "nn" → "n" → "nao"). Single letters are expanded only
  * where pt-BR chat use is near-universal ("n" = não, "q" = que, "p" = para).
  */
-const SHORTHAND: Record<string, string> = {
+export const SHORTHAND: Readonly<Record<string, string>> = {
   n: 'nao', nn: 'nao', naum: 'nao',
   q: 'que', oq: 'o que', pq: 'porque',
   vc: 'voce', vcs: 'voces', c: 'voce',
@@ -55,6 +55,44 @@ const SHORTHAND: Record<string, string> = {
   p: 'para', s: 'sem', d: 'de',
 };
 
+/** Unicode combining marks dropped from decomposed input (U+0300–U+036F), inclusive. */
+export const MARCAS_COMBINANTES: readonly [number, number] = [0x300, 0x36f];
+
+/**
+ * JavaScript's `\s`, spelled out. Written as an explicit class so an interpreter in another
+ * language reads the SAME set (Python `re.ASCII` `\s` is ASCII-only; JS `\s` is Unicode).
+ */
+export const ESPACO = String.raw`[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`;
+
+/**
+ * Slash/plus shorthand, read before punctuation is dropped. Group 1 (the character before)
+ * is kept and `texto` replaces the rest of the match.
+ */
+export const SUBSTITUICOES_PREVIAS: readonly { readonly padrao: string; readonly texto: string }[] = [
+  { padrao: String.raw`(^|[^a-z0-9])p/(?=${ESPACO}|[a-z]|$)`, texto: 'para ' },
+  { padrao: String.raw`(^|[^a-z0-9])c/(?=${ESPACO}|[a-z]|$)`, texto: 'com ' },
+  { padrao: String.raw`(^|[^a-z0-9])s/(?=${ESPACO}|[a-z]|$)`, texto: 'sem ' },
+  { padrao: String.raw`(^|[^a-z0-9])d\+`, texto: 'demais ' },
+];
+
+/** Spelled-out words ("q-u-e-r-o", "m.o.r.r.e.r"): inside a match, `SEPARADOR_SOLETRADO` chars are removed. */
+export const SEPARADOR_SOLETRADO = String.raw`[-._*]`;
+export const SOLETRADO = String.raw`\b[a-z](?:${SEPARADOR_SOLETRADO}[a-z]){2,}\b`;
+
+/** Sentence punctuation (and a dash between spaces) → the sentence mark token. */
+export const PONTUACAO = String.raw`[.,;:!?\n\r\u2026\u2014\u2013]+|${ESPACO}-+${ESPACO}`;
+/** The sentence-mark token in the normalized text. */
+export const MARCA_DE_FRASE = '.';
+/** Inside a whitespace chunk, tokens are the runs of these characters; `@` is then trimmed at both ends. */
+export const SEPARADOR_DE_TOKEN = '[^a-z0-9@]+';
+
+const RE_SUBSTITUICOES = SUBSTITUICOES_PREVIAS.map(({ padrao, texto }) => ({ re: new RegExp(padrao, 'g'), texto }));
+const RE_SOLETRADO = new RegExp(SOLETRADO, 'g');
+const RE_SEPARADOR_SOLETRADO = new RegExp(SEPARADOR_SOLETRADO, 'g');
+const RE_PONTUACAO = new RegExp(PONTUACAO, 'g');
+const RE_ESPACOS = new RegExp(`${ESPACO}+`);
+const RE_SEPARADOR_DE_TOKEN = new RegExp(SEPARADOR_DE_TOKEN);
+
 /** Collapse every run of the same letter to one. Exported for compiling rule patterns. */
 export function squeeze(text: string): string {
   let out = '';
@@ -71,7 +109,7 @@ function stripAccents(text: string): string {
   let out = '';
   for (const ch of text) {
     const code = ch.codePointAt(0) ?? 0;
-    if (code >= 0x300 && code <= 0x36f) continue; // combining marks (decomposed input)
+    if (code >= MARCAS_COMBINANTES[0] && code <= MARCAS_COMBINANTES[1]) continue; // combining marks (decomposed input)
     out += ACCENTS[ch] ?? ch;
   }
   return out;
@@ -99,26 +137,22 @@ function expandToken(raw: string): string {
 export function normalize(text: string): string {
   let t = stripAccents(text.toLowerCase());
   // Slash/plus shorthand must be read before punctuation is dropped.
-  t = t
-    .replace(/(^|[^a-z0-9])p\/(?=\s|[a-z]|$)/g, '$1para ')
-    .replace(/(^|[^a-z0-9])c\/(?=\s|[a-z]|$)/g, '$1com ')
-    .replace(/(^|[^a-z0-9])s\/(?=\s|[a-z]|$)/g, '$1sem ')
-    .replace(/(^|[^a-z0-9])d\+/g, '$1demais ');
+  for (const { re, texto } of RE_SUBSTITUICOES) t = t.replace(re, (_m, antes: string) => antes + texto);
   // Spelled-out words ("q-u-e-r-o", "m.o.r.r.e.r") are read as one word.
-  t = t.replace(/\b[a-z](?:[-._*][a-z]){2,}\b/g, (m) => m.replace(/[-._*]/g, ''));
+  t = t.replace(RE_SOLETRADO, (m) => m.replace(RE_SEPARADOR_SOLETRADO, ''));
   // Sentence marks become a "." token: "Não. Quero morrer." must not read as "não quero morrer".
-  t = t.replace(/[.,;:!?\n\r…—–]+|\s-+\s/g, ' . ');
+  t = t.replace(RE_PONTUACAO, ` ${MARCA_DE_FRASE} `);
   const tokens: string[] = [];
-  for (const chunk of t.split(/\s+/)) {
-    if (chunk === '.') {
-      if (tokens.length > 0 && tokens[tokens.length - 1] !== '.') tokens.push('.');
+  for (const chunk of t.split(RE_ESPACOS)) {
+    if (chunk === MARCA_DE_FRASE) {
+      if (tokens.length > 0 && tokens[tokens.length - 1] !== MARCA_DE_FRASE) tokens.push(MARCA_DE_FRASE);
       continue;
     }
-    for (const raw of chunk.split(/[^a-z0-9@]+/)) {
+    for (const raw of chunk.split(RE_SEPARADOR_DE_TOKEN)) {
       const tok = raw.replace(/^@+|@+$/g, '');
       if (tok.length > 0) tokens.push(expandToken(deLeet(tok)));
     }
   }
-  while (tokens[tokens.length - 1] === '.') tokens.pop();
-  return tokens.join(' ').replace(/\s+/g, ' ').trim();
+  while (tokens[tokens.length - 1] === MARCA_DE_FRASE) tokens.pop();
+  return tokens.join(' ');
 }

@@ -1,0 +1,26 @@
+# limiar-app CI — typecheck + the full jest suite (incl. the safety corpus and the safety-pack
+# byte-equality + Python-regex parity checks, which need python3: preinstalled on ubuntu-latest).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          # No engines/.nvmrc in the repo; local dev runs Node 25 (non-LTS) → the current LTS major.
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx jest --ci

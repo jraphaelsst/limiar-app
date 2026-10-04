@@ -46,7 +46,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "test": "jest"
+    "test": "jest",
+    "safety:export": "SAFETY_EXPORT=1 jest src/safety/__tests__/safety-pack.test.ts"
   },
   "private": true,
   "jest": {

@@ -1,7 +1,9 @@
 /**
  * Safety triage rules — GOVERNED CONTENT (spec §22). Every change here is a change to a
  * safety-critical classifier: bump `VERSAO_TRIAGEM`, run the regression corpus
- * (src/safety/__tests__) and record who approved it (docs/design/decisions.md).
+ * (src/safety/__tests__) and record who approved it (docs/design/decisions.md). Then run
+ * `npm run safety:export` and commit `safety/` with it: the server reads these rules from that
+ * derived pack (src/safety/export.ts) and a test fails while it is stale.
  *
  * How to read a rule
  *  - `padrao` is a regular expression over the NORMALIZED text (src/safety/normalize.ts):
