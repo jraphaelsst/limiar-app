@@ -1,12 +1,13 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { usePreventRemove } from 'expo-router/react-navigation';
-import { useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { StyleSheet, View, type Text } from 'react-native';
 
 import { AppText, BackBar, Button, CheckItem, Chip, IconButton, Icons, MetaRow, OptionPill, Screen } from '@/components/ui';
 import { categoryLabel, energyLabel, environmentLabel, formatDuration } from '@/data/activities';
+import { announce, useFocusOnChange } from '@/lib/a11y';
 import { match, presetFor, questions, shuffle, type Choices, type Preset } from '@/lib/recommend';
-import { useSaved } from '@/state/app-state';
+import { saveFailedText, useSaved } from '@/state/app-state';
+import { usePreviousStepOnBack } from '@/state/use-previous-step-on-back';
 import { color, radius, space } from '@/theme';
 
 const relaxedLabel = { company: 'companhia', place: 'ambiente', energy: 'energia', time: 'tempo', category: 'tipo de atividade' } as const;
@@ -21,7 +22,15 @@ export default function Sofa() {
   const pending = useMemo(() => questions.filter((q) => base.choices[q.key] === undefined), [base]);
 
   const [choices, setChoices] = useState<Choices>(base.choices);
-  const [step, setStep] = useState(0);
+  const [step, setStepState] = useState(0);
+  // The question a tap belongs to: a second tap before the re-render is ignored, not taken as the next answer.
+  const stepRef = useRef(0);
+  const setStep = useCallback((n: number) => {
+    stepRef.current = n;
+    setStepState(n);
+  }, []);
+  const h1 = useRef<Text>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [seed, setSeed] = useState(() => Date.now());
   const [index, setIndex] = useState(0);
   const { isSaved, toggle } = useSaved();
@@ -29,10 +38,10 @@ export default function Sofa() {
   const done = step >= pending.length;
 
   // Decision 2026-10-03 (board nnl-hardware-back): while answering, "back" means the previous
-  // question. One hook covers every back path — Android hardware back, iOS swipe (native-stack
-  // cancels the native dismiss and sends it here), the BackBar arrow and browser back on web.
-  // At step 0 and on the result screen, back leaves normally.
-  usePreventRemove(!done && step > 0, () => setStep((s) => Math.max(0, s - 1)));
+  // question — see usePreviousStepOnBack for which back paths it covers. At step 0 and on the
+  // result screen, back leaves normally.
+  usePreviousStepOnBack(!done && step > 0, () => setStep(Math.max(0, stepRef.current - 1)));
+  useFocusOnChange(h1, done ? `idea-${index}-${seed}` : step, done ? undefined : `${step + 1} de ${pending.length}`);
   const result = useMemo(() => {
     if (!done) return null;
     const m = match(choices, base.category);
@@ -42,8 +51,9 @@ export default function Sofa() {
   if (!done) {
     const q = pending[step];
     const answer = (value: string) => {
+      if (stepRef.current !== step) return; // stale double-tap
       setChoices((c) => ({ ...c, [q.key]: value }));
-      setStep((s) => s + 1);
+      setStep(step + 1);
     };
     return (
       <Screen key={`q-${step}`} edges={['top', 'bottom']}>
@@ -52,14 +62,16 @@ export default function Sofa() {
           <AppText variant="caption" color="textSubtle" accessibilityLiveRegion="polite">
             {step + 1} de {pending.length}
           </AppText>
-          <AppText variant="h1">{q.title}</AppText>
+          <AppText ref={h1} variant="h1">
+            {q.title}
+          </AppText>
         </View>
-        <View style={styles.options} accessibilityRole="radiogroup">
+        <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel={q.title}>
           {q.options.map((o) => (
             <OptionPill key={o.value} label={o.label} selected={choices[q.key] === o.value} onPress={() => answer(o.value)} />
           ))}
         </View>
-        {step > 0 && <Button variant="quiet" label="Voltar à pergunta anterior" onPress={() => setStep((s) => s - 1)} />}
+        {step > 0 && <Button variant="quiet" label="Voltar à pergunta anterior" onPress={() => setStep(step - 1)} />}
       </Screen>
     );
   }
@@ -80,6 +92,14 @@ export default function Sofa() {
 
   const a = items[index % items.length];
   const saved = isSaved(a.activityId);
+  const toggleSaved = () => {
+    setSaveFailed(false);
+    toggle(a.activityId).catch((e) => {
+      console.error('[storage] could not update saved items', e);
+      setSaveFailed(true);
+      announce(saveFailedText);
+    });
+  };
   return (
     <Screen
       key={`idea-${a.activityId}`}
@@ -88,12 +108,17 @@ export default function Sofa() {
         <View style={styles.actions}>
           <Button label="Bora" arrow fullWidth onPress={() => router.push({ pathname: '/atividade/[id]', params: { id: a.activityId, from: 'sofa' } })} />
           <View style={styles.secondary}>
-            <Button variant="quiet" label="Outra ideia" onPress={() => setIndex((i) => i + 1)} disabled={items.length < 2} />
-            <Button variant="quiet" label="Escolher de novo" onPress={() => { setChoices(base.choices); setStep(0); setIndex(0); setSeed(Date.now()); }} />
+            <Button variant="quiet" label="Outra ideia" onPress={() => { setSaveFailed(false); setIndex((i) => i + 1); }} disabled={items.length < 2} />
+            <Button variant="quiet" label="Escolher de novo" onPress={() => { setSaveFailed(false); setChoices(base.choices); setStep(0); setIndex(0); setSeed(Date.now()); }} />
           </View>
         </View>
       }>
-      <BackBar right={<IconButton icon={Icons.Bookmark} label={saved ? 'Remover dos salvos' : 'Guardar'} selected={saved} onPress={() => toggle(a.activityId)} />} />
+      <BackBar right={<IconButton icon={Icons.Bookmark} label={saved ? 'Remover dos salvos' : 'Guardar'} selected={saved} onPress={toggleSaved} />} />
+      {saveFailed && (
+        <AppText variant="label" color="error" accessibilityLiveRegion="assertive">
+          {saveFailedText}
+        </AppText>
+      )}
       {result!.relaxed.length > 0 && (
         <View style={styles.note}>
           <AppText variant="caption" color="text">
@@ -103,7 +128,9 @@ export default function Sofa() {
       )}
       <View style={styles.block}>
         <Chip label={categoryLabel[a.category]} tone="sand" />
-        <AppText variant="h1">{a.title}</AppText>
+        <AppText ref={h1} variant="h1">
+          {a.title}
+        </AppText>
         <AppText variant="body" color="textBody">
           {a.summary}
         </AppText>

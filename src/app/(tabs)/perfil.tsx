@@ -3,8 +3,11 @@ import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText, Button, Icons, ListRow, Screen } from '@/components/ui';
+import { announce } from '@/lib/a11y';
 import { timeLabel, useAppState } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
+
+const eraseFailedText = 'Não foi possível apagar agora. Tente de novo.';
 
 /** Phase 0 profile: help/safety one tap away (spec §10.3, §16); preferences (screen 16); erase-all per spec §10.3. */
 export default function Perfil() {
@@ -18,6 +21,7 @@ export default function Perfil() {
     } catch (e) {
       console.error('[perfil] erase failed', e);
       setFailed(true);
+      announce(eraseFailedText);
     }
   };
 
@@ -48,8 +52,8 @@ export default function Perfil() {
             <Button variant="quiet" label="Cancelar" onPress={() => setConfirming(false)} />
           </View>
           {failed && (
-            <AppText variant="label" color="error">
-              Não foi possível apagar agora. Tente de novo.
+            <AppText variant="label" color="error" accessibilityLiveRegion="assertive">
+              {eraseFailedText}
             </AppText>
           )}
         </View>

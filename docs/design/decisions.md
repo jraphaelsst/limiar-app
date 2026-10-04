@@ -23,6 +23,7 @@ Append-only. Each row: date · decision · who decided · source.
 
 | 2026-10-03 | Build order: finish Phase 0 in parallel — games A+B, preferences + export, hardware back, icon/splash, unit tests | Claude, delegated by João | Decision Board `nnl-next-build` |
 | 2026-10-03 | Phone back gesture inside "Me tira do sofá" goes to the previous question (step > 0) | Claude, delegated by João | mobile-dev review; board `nnl-hardware-back` |
+| 2026-10-03 | Games A and B follow the same back rule on every platform: back during rounds (after the first) = previous round; in game B, back with the reflection open closes it; first round / intro / result leave normally. One hook app-wide (`usePreviousStepOnBack`, on `usePreventRemove`) | Claude, delegated by João | mobile-dev review of b585cec; extends `nnl-hardware-back` |
 | 2026-10-03 | Brand "avoid" word list adopted as an app copy rule (agent flags as *corrigir*) | Claude, delegated by João | brand KB VOZ/03; board `nnl-brand-lexicon` |
 | 2026-10-03 | Primary buttons stay pills (approved mockup is the app's visual authority) | Claude, delegated by João | board `nnl-brand-pill` |
 | 2026-10-03 | Errors keep brick `#8B2420` (wine means "act"; errors always paired with words) | Claude, delegated by João | board `nnl-brand-error-color` |

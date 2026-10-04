@@ -5,8 +5,12 @@ import { StyleSheet, View } from 'react-native';
 import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, ListRow, Screen } from '@/components/ui';
 import { gameAPattern, games, themeList } from '@/data/games';
+import { announce } from '@/lib/a11y';
+import { longDate } from '@/lib/dates';
 import { useAppState } from '@/state/app-state';
 import { color, radius, space } from '@/theme';
+
+const removeFailedText = 'Não foi possível apagar agora. Tente de novo.';
 
 /**
  * "Quem sou eu agora?" — spec §3.1 world, entry to the discovery games of §4.5.
@@ -21,7 +25,8 @@ export default function Jogos() {
     setError(null);
     removeGameAResult(savedAt).catch((e) => {
       console.error('[storage] could not remove a game result', e);
-      setError('Não foi possível apagar agora. Tente de novo.');
+      setError(removeFailedText);
+      announce(removeFailedText);
     });
   };
 
@@ -46,7 +51,7 @@ export default function Jogos() {
           <AppText variant="h3">Resultados guardados</AppText>
           {gameAResults.map((r) => {
             const p = gameAPattern(r.choices);
-            const date = new Date(r.savedAt).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+            const date = longDate(new Date(r.savedAt)); // same words as the export (no Intl dependency)
             return (
               <View key={r.savedAt} style={styles.saved}>
                 <AppText variant="caption" color="textSubtle">
