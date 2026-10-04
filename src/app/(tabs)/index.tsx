@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { ActivityCard } from '@/components/ActivityCard';
 import { SofaCard } from '@/components/SofaCard';
 import { AppText, ListRow, Logo, Screen, SectionHeader } from '@/components/ui';
-import { intents } from '@/data/intents';
+import { intentHref, intents } from '@/data/intents';
 import { pickToday } from '@/lib/recommend';
 import { interestCategories, useAppState } from '@/state/app-state';
 import { space } from '@/theme';
@@ -33,7 +33,7 @@ export default function Home() {
         <SectionHeader title="O que combina com hoje?" />
         <View style={styles.list}>
           {intents.map((i) => (
-            <ListRow key={i.id} title={i.label} onPress={() => router.push({ pathname: '/sofa', params: { preset: i.id } })} />
+            <ListRow key={i.id} title={i.label} onPress={() => router.push(intentHref(i.id))} />
           ))}
         </View>
       </View>

@@ -50,6 +50,8 @@ function Routes() {
         <Stack.Screen name="atividades" />
         <Stack.Screen name="preferencias" />
         <Stack.Screen name="jogos" />
+        <Stack.Screen name="reflexao/index" />
+        <Stack.Screen name="reflexao/[tema]" />
         <Stack.Screen name="tipografia" />
       </Stack.Protected>
       <Stack.Protected guard={!onboarded}>
