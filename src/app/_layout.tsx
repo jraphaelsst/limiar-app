@@ -27,7 +27,7 @@ export default function RootLayout() {
 
 /**
  * Until onboarding is done only the welcome flow is reachable; afterwards it is
- * gone. Help/safety and "Sobre" are outside both guards: always reachable.
+ * gone. Help, the high-risk route (/seguranca) and "Sobre" are outside both guards: always reachable.
  */
 function Routes() {
   const { ready, prefs } = useAppState();
@@ -56,6 +56,7 @@ function Routes() {
         <Stack.Screen name="boas-vindas" />
       </Stack.Protected>
       <Stack.Screen name="ajuda" />
+      <Stack.Screen name="seguranca" />
       <Stack.Screen name="sobre" />
       <Stack.Screen name="privacidade" />
     </Stack>

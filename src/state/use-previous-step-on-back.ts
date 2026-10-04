@@ -2,7 +2,7 @@ import { useNavigation } from 'expo-router';
 import { usePreventRemove, type NavigationAction } from 'expo-router/react-navigation';
 
 /** A plain "back": the BackBar arrow / router.back(), Android back, an iOS swipe (native-stack sends POP 1). */
-function isOneStepBack(action: NavigationAction): boolean {
+export function isOneStepBack(action: NavigationAction): boolean {
   if (action.type === 'GO_BACK') return true;
   if (action.type !== 'POP') return false;
   const count = (action.payload as { count?: number } | undefined)?.count;
