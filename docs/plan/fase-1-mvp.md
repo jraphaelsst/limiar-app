@@ -39,9 +39,11 @@ admin básico. A Fase 0 (protótipo clicável, dados locais, sem IA/back-end) es
 - **Onda 1 (paralela, sem texto livre):** (A) camada de segurança no aparelho + tela 19 + rota de violência + suíte de
   regressão (§21) — é o portão da spec §25.5; (B) passo a passo, ações do cartão (§4.4), feedback
   "mais disso / menos disso / não combina" usado na recomendação (§6).
-- **Onda 2 (depois de A):** tudo que recebe texto digitado passa pelo portão `useSafetyGate`: frase pós-atividade
-  (tela 09), pergunta aberta (13–14) com resposta **editorial local** (sem IA — a spec §7.3 manda dizer que o app não
-  tem base confiável quando não tiver), reflexões salvas só por ação explícita, editáveis/apagáveis, no exportar/apagar.
+- **Onda 2 (revisada 2026-10-04):** a triagem por regras pegou só 32% / 36% do vermelho em dois conjuntos cegos
+  na primeira passagem ⇒ **nenhum campo de texto livre** até existir o classificador semântico (≥ 95% de recall de
+  vermelho num conjunto cego novo). A onda 2 vira **reflexão guiada sem digitação**: tema (8 da spec §4.7) →
+  2–3 perguntas curadas (rascunho) + "prefiro fazer algo agora". Frase pós-atividade e texto livre da pergunta
+  aberta entram na onda 3, junto com o classificador.
 - **Onda 3 (back-end de IA — ver §6):** serviço sem estado, montado e testado com provedor *Fake*; **não vai ao ar**
   antes das decisões humanas H1–H4.
 - **Conteúdo (contínuo, humano):** catálogo de 15 → 60–100 atividades; variações; 5 mundos. A IA pode rascunhar, mas

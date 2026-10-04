@@ -57,6 +57,9 @@ Append-only. Each row: date · decision · who decided · source.
 | 2026-10-04 | **Mônica reviews and approves all content** (activities, knowledge base) | João, for Mônica — she may reopen | board `nnl-f1-editorial` |
 | 2026-10-04 | Claude **drafts the next activities in batches of 15** as `rascunho` for Mônica's review | João, for Mônica — she may reopen | board `nnl-f1-drafts` |
 | 2026-10-04 | Build the **editorial workflow in the NoctusAI seed** and **admin MFA in core SSO** (platform-wide); activities stay in git/PR review until then | João | board `nnl-f1-admin-mfa`; plan §6 (b), H6 |
+| 2026-10-04 | **No free-text field ships** (post-activity phrase, open question text) until a **semantic classifier** runs alongside the rules and reaches **≥ 95% vermelho recall on a fresh blind set** (rules alone: 32% / 36% on two blind sets on first contact) | Claude, delegated by João — João may reopen | spec §7.1 'não confiar em um único…'; classifier server-side on the Anthropic route, after the provider contract (H1) |
+| 2026-10-04 | Wave 2 = **guided reflection without typing**: pick one of the 8 spec §4.7 themes → 2–3 curated prompts (rascunho, Mônica reviews) + 'prefiro fazer algo agora'; nothing typed, sent or stored | Claude, delegated by João | plan §3 |
+| 2026-10-04 | 'Avisar alguém de confiança' stays the **share sheet** (no contact data collected); **no safety events recorded** in Phase 1; the four 'Ligar' buttons stay primary on emergency screens | Claude, delegated by João | safety slice open questions 4–6 |
 
 ### Rationale — welcome screen without photography
 
