@@ -24,8 +24,9 @@ O lote tenta equilibrar o catálogo:
 | Orçamento | zero 12 · baixo 3 · médio 0 | zero 26 · baixo 4 · médio 0 |
 | Mundos (§3.1) | nenhuma semente para "filhos adultos"; "nós dois" só indiretamente | os seis mundos cobertos |
 
-O mundo de cada atividade é só uma proposta: o catálogo ainda não tem o campo "mundo", ele
-existe apenas nesta folha.
+O mundo de cada atividade é só uma proposta. Desde o lote 2 (5 out. 2026), o catálogo tem o campo
+"mundo" (`worlds`) e cada atividade abaixo está nele com o mundo desta tabela; as sementes também
+ganharam mundo (ver `atividades-lote-2.md`). Mudar o mundo aqui significa mudar também no catálogo.
 
 | id | título | mundo | categoria | tempo | por que entrou |
 |---|---|---|---|---|---|
