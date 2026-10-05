@@ -27,6 +27,7 @@ const mk = (o: Partial<Activity> = {}): Activity => ({
   mobility: 'sentada',
   materials: ['x'],
   steps: ['a', 'b', 'c'],
+  worlds: ['experimenta'],
   safetyTags: [],
   sourceNote: 'test',
   reviewStatus: 'rascunho',

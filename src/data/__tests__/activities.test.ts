@@ -10,6 +10,7 @@ import {
   type Mobility,
   type SocialMode,
 } from '@/data/activities';
+import { worlds, type WorldId } from '@/data/worlds';
 
 // Record<Union, true> fails to compile if a member is missing or extra — the runtime check stays exhaustive.
 const categories: Record<Category, true> = {
@@ -26,6 +27,15 @@ const environments: Record<Environment, true> = { casa: true, fora: true, ambos:
 const socialModes: Record<SocialMode, true> = { solo: true, companhia: true, ambos: true };
 const budgets: Record<Budget, true> = { zero: true, baixo: true, medio: true };
 const mobilities: Record<Mobility, true> = { sentada: true, leve: true, moderada: true };
+const worldIds: Record<WorldId, true> = {
+  'quem-sou': true,
+  'filhos-adultos': true,
+  tempo: true,
+  'nos-dois': true,
+  mundo: true,
+  experimenta: true,
+};
+const idOf = (n: number) => `act-${String(n).padStart(4, '0')}`;
 
 describe('formatDuration', () => {
   test.each([
@@ -70,8 +80,12 @@ describe('activity catalog invariants', () => {
     expect(Number.isInteger(a.version) && a.version >= 1).toBe(true);
   });
 
-  test('ids are stable: act-0001…act-0030 are all still in the catalog (retire by status, never delete)', () => {
-    for (let n = 1; n <= 30; n++) expect(findActivity(`act-${String(n).padStart(4, '0')}`)).toBeDefined();
+  test('ids are stable: act-0001…act-0060 are all still in the catalog (retire by status, never delete)', () => {
+    for (let n = 1; n <= 60; n++) expect(findActivity(idOf(n))).toBeDefined();
+  });
+
+  test('ids are contiguous and in order: act-0001…act-N with no gap (a new item takes the next id)', () => {
+    expect(activities.map((a) => a.activityId)).toEqual(activities.map((_a, i) => idOf(i + 1)));
   });
 
   test('nothing is reviewed yet: every activity is a rascunho with no reviewer (spec §22)', () => {
@@ -81,17 +95,73 @@ describe('activity catalog invariants', () => {
     }
   });
 
-  test('batch 1 (act-0016…act-0030) is marked as Claude drafts for Mônica', () => {
-    const lote1 = activities.filter((a) => a.activityId >= 'act-0016' && a.activityId <= 'act-0030');
-    expect(lote1).toHaveLength(15);
-    for (const a of lote1) {
-      expect(a.sourceNote).toBe('Rascunho de Claude (lote 1, 2026-10-04) para revisão da Mônica');
+  test('the 15 seeds (act-0001…act-0015) keep their spec provenance', () => {
+    for (let n = 1; n <= 15; n++) expect(findActivity(idOf(n))?.sourceNote).toBe('Semente da especificação mestre v1.0 §5.1');
+  });
+
+  test.each([
+    [1, 16, 30, '2026-10-04'],
+    [2, 31, 45, '2026-10-05'],
+    [3, 46, 60, '2026-10-05'],
+  ] as const)('batch %i (ids %i…%i) is marked as Claude drafts for Mônica, rascunho v1', (batch, from, to, date) => {
+    const lote = activities.filter((a) => a.activityId >= idOf(from) && a.activityId <= idOf(to));
+    expect(lote).toHaveLength(15);
+    for (const a of lote) {
+      expect(a.sourceNote).toBe(`Rascunho de Claude (lote ${batch}, ${date}) para revisão da Mônica`);
+      expect(a.reviewStatus).toBe('rascunho');
+      expect(a.reviewedBy).toBeNull();
       expect(a.version).toBe(1);
+      // From batch 2 on, every draft carries its own provisional variation (batch 1 only where it applied).
+      if (batch >= 2) expect(a.variation?.trim()).toBeTruthy();
     }
   });
 
   test('findActivity resolves every id and returns undefined for unknown', () => {
     for (const a of activities) expect(findActivity(a.activityId)).toBe(a);
     expect(findActivity('act-nope')).toBeUndefined();
+  });
+});
+
+describe('worlds (spec §3.1)', () => {
+  test('the six world ids of worlds.ts are exactly the WorldId union', () => {
+    expect(worlds.map((w) => w.id).sort()).toEqual(Object.keys(worldIds).sort());
+  });
+
+  test.each(activities.map((a) => [a.activityId, a] as const))('%s belongs to 1–2 valid worlds, no repeats', (_id, a) => {
+    expect(a.worlds.length).toBeGreaterThanOrEqual(1);
+    expect(a.worlds.length).toBeLessThanOrEqual(2);
+    expect(new Set(a.worlds).size).toBe(a.worlds.length);
+    for (const w of a.worlds) expect(Object.keys(worldIds)).toContain(w);
+  });
+
+  // Explorar shows a world only when it has content; 8 keeps "Me tira do sofá"-style variety inside each.
+  test.each(Object.keys(worldIds))('world %s has at least 8 activities', (w) => {
+    expect(activities.filter((a) => a.worlds.includes(w as WorldId)).length).toBeGreaterThanOrEqual(8);
+  });
+
+  // Spec §3.1: "Nós dois agora" must work for someone without a partner, without embarrassment.
+  test.each(activities.filter((a) => a.worlds.includes('nos-dois')).map((a) => [a.activityId, a] as const))(
+    '%s (nós dois) offers a way without a partner',
+    (_id, a) => {
+      const text = [a.title, a.summary, ...a.steps, a.variation ?? ''].join('\n').toLowerCase();
+      expect(text).toMatch(/sozinha|amiga|dois ou um|morando sozinha/);
+    },
+  );
+});
+
+describe('voice of the drafts (spec §2, §2.1; agents/nos-no-limiar revisar-atividade)', () => {
+  const drafts = activities.filter((a) => a.activityId >= idOf(16));
+  const textOf = (a: (typeof activities)[number]) =>
+    [a.title, a.summary, ...a.materials, ...a.steps, a.variation ?? ''].join('\n').toLowerCase();
+
+  test.each(drafts.map((a) => [a.activityId, a] as const))('%s: no exclamation, no "você precisa/deve"', (_id, a) => {
+    expect(textOf(a)).not.toContain('!');
+    expect(textOf(a)).not.toMatch(/\bvocê (precisa|deve)\b/);
+  });
+
+  test.each(drafts.map((a) => [a.activityId, a] as const))('%s: no avoid-list, drama or clinical word', (_id, a) => {
+    const avoid =
+      /(?<![\p{L}])(burnout|esgotamento|esgotada|sobrecarga|resiliente|resiliência|empoderamento|autoconhecimento|guerreira|forte|vazio|vazia|dor|depressão|ansiedade|trauma|luto|sofrimento|ninho vazio|síndrome|diagnóstico|transtorno|terapia|terapêutic\p{L}*|inconsciente|cura|curar|emagrecer|peso|calorias|álcool|vinho|cerveja|drinque)(?![\p{L}])/u;
+    expect(textOf(a)).not.toMatch(avoid);
   });
 });
