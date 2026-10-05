@@ -33,6 +33,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0da48813-2d7b-4533-a4fe-1871ff8f6bdb"
+      }
+    },
+    "owner": "jraphaelsst"
   }
 }
