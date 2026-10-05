@@ -1,0 +1,290 @@
+<title>Revisão Nós no Limiar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&family=Lora:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (the item card) under a sticky bar of groups + filters; the app's own palette and faces. */
+:root {
+  --bg: #F3F0EA; --surface: #FAF7F1; --sunken: #ECE7DE; --line: #DDD4C6; --border: #8E8172;
+  --text: #222222; --body: #625A4F; --subtle: #6E665C;
+  --primary: #651B19; --on-primary: #F3F0EA; --tint: #E9D9CF;
+  --ok: #36563E; --ok-bg: #DCE5DB; --adjust: #73521D; --adjust-bg: #EFE3CC; --drop: #8B2420; --drop-bg: #F1D9D4;
+  --display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --read: "Lora", Georgia, serif;
+  --ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #1B1715; --surface: #241F1C; --sunken: #2E2724; --line: #3B332E; --border: #8E8172;
+  --text: #F1ECE4; --body: #D2C9BD; --subtle: #ABA194;
+  --primary: #E3A29B; --on-primary: #1B1715; --tint: #3A2422;
+  --ok: #9CC7A4; --ok-bg: #22342A; --adjust: #E1BC79; --adjust-bg: #3A2F1C; --drop: #EC968C; --drop-bg: #3D211F;
+  color-scheme: dark;
+} }
+:root[data-theme="dark"] {
+  --bg: #1B1715; --surface: #241F1C; --sunken: #2E2724; --line: #3B332E; --border: #8E8172;
+  --text: #F1ECE4; --body: #D2C9BD; --subtle: #ABA194;
+  --primary: #E3A29B; --on-primary: #1B1715; --tint: #3A2422;
+  --ok: #9CC7A4; --ok-bg: #22342A; --adjust: #E1BC79; --adjust-bg: #3A2F1C; --drop: #EC968C; --drop-bg: #3D211F;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--text); font-family: var(--ui); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; }
+header h1 { font-family: var(--display); font-weight: 600; font-size: 2.3rem; line-height: 1.1; margin: 0; text-wrap: balance; }
+header p { color: var(--body); font-family: var(--read); margin: 10px 0 0; max-width: 62ch; }
+.notice { margin-top: 16px; padding: 12px 14px; border: 1px solid var(--line); background: var(--sunken); border-radius: 10px; color: var(--body); font-size: 0.9rem; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 22px; }
+.sum { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; text-align: left; font: inherit; color: inherit; cursor: pointer; }
+.sum[aria-pressed="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.sum .name { font-weight: 600; font-size: 0.85rem; letter-spacing: 0.02em; }
+.sum .count { font-variant-numeric: tabular-nums; color: var(--body); font-size: 0.82rem; margin-top: 4px; }
+.bar { height: 5px; border-radius: 3px; background: var(--sunken); margin-top: 8px; overflow: hidden; display: flex; }
+.bar i { display: block; height: 100%; }
+.bar .b-ok { background: var(--ok); } .bar .b-adjust { background: var(--adjust); } .bar .b-drop { background: var(--drop); }
+.filters { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); padding-block: 12px; margin-top: 14px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { font: inherit; font-size: 0.85rem; font-weight: 500; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.chip .n { font-variant-numeric: tabular-nums; opacity: 0.8; margin-left: 4px; }
+.groupnote { color: var(--subtle); font-size: 0.85rem; margin: 16px 0 0; }
+.list { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.empty { padding: 28px 16px; text-align: center; color: var(--body); font-family: var(--read); }
+article { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; min-width: 0; }
+article .top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
+article h2 { font-family: var(--display); font-weight: 600; font-size: 1.55rem; line-height: 1.15; margin: 0; text-wrap: balance; }
+.meta { color: var(--subtle); font-size: 0.8rem; margin-top: 4px; }
+.meta code { font-family: var(--ui); font-size: 0.78rem; background: var(--sunken); padding: 1px 6px; border-radius: 4px; }
+.state { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; white-space: nowrap; background: var(--sunken); color: var(--body); }
+.state.ok { background: var(--ok-bg); color: var(--ok); }
+.state.adjust { background: var(--adjust-bg); color: var(--adjust); }
+.state.drop { background: var(--drop-bg); color: var(--drop); }
+.state.changed { background: var(--tint); color: var(--primary); }
+dl { margin: 14px 0 0; display: flex; flex-direction: column; gap: 12px; }
+dt { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); }
+dd { margin: 3px 0 0; font-family: var(--read); font-size: 1.02rem; line-height: 1.6; color: var(--text); max-width: 65ch; }
+dd ol, dd ul { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 4px; }
+.origin { margin-top: 14px; font-size: 0.8rem; color: var(--subtle); font-style: italic; }
+.reply { margin-top: 14px; padding: 10px 12px; border-radius: 10px; background: var(--sunken); font-size: 0.9rem; color: var(--body); }
+.reply strong { color: var(--text); }
+.decide { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice { font: inherit; font-size: 0.9rem; font-weight: 500; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); cursor: pointer; min-height: 40px; }
+.choice[aria-pressed="true"][data-v="aprovado"] { background: var(--ok); border-color: var(--ok); color: var(--surface); }
+.choice[aria-pressed="true"][data-v="ajustar"] { background: var(--adjust); border-color: var(--adjust); color: var(--surface); }
+.choice[aria-pressed="true"][data-v="retirar"] { background: var(--drop); border-color: var(--drop); color: var(--surface); }
+label.lab { font-size: 0.85rem; font-weight: 500; color: var(--body); }
+textarea { width: 100%; min-height: 76px; resize: vertical; font-family: var(--read); font-size: 0.98rem; line-height: 1.5; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.save { font: inherit; font-weight: 600; padding: 9px 18px; border-radius: 999px; border: none; background: var(--primary); color: var(--on-primary); cursor: pointer; min-height: 40px; }
+.save:disabled { opacity: 0.45; cursor: default; }
+.status { font-size: 0.85rem; color: var(--body); }
+.status.err { color: var(--drop); }
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) { .save, .choice, .chip { transition: background-color .15s, color .15s, border-color .15s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Revisão do conteúdo do Nós no Limiar</h1>
+    <p>Tudo o que está no app e ainda espera a sua leitura. Para cada item: aprovar, pedir ajuste ou retirar. Quando pedir ajuste, escreva o que mudar; Claude aplica no app e o item volta aqui marcado como atualizado, para você conferir.</p>
+    <div class="notice" id="notice" hidden></div>
+  </header>
+
+  <div class="summary" id="summary" aria-label="Grupos de conteúdo"></div>
+
+  <div class="filters" role="group" aria-label="Mostrar">
+    <button class="chip" data-f="pendente" aria-pressed="true">Para revisar<span class="n" id="n-pendente"></span></button>
+    <button class="chip" data-f="ajustar" aria-pressed="false">Com ajuste<span class="n" id="n-ajustar"></span></button>
+    <button class="chip" data-f="feito" aria-pressed="false">Decididos<span class="n" id="n-feito"></span></button>
+    <button class="chip" data-f="todos" aria-pressed="false">Todos<span class="n" id="n-todos"></span></button>
+  </div>
+
+  <p class="groupnote" id="groupnote"></p>
+  <div class="list" id="list"><div class="empty">Carregando o conteúdo…</div></div>
+</div>
+
+<script>
+(() => {
+  const VERDICTS = { aprovado: 'Aprovar', ajustar: 'Pedir ajuste', retirar: 'Retirar' };
+  const STATE_LABEL = { aprovado: 'Aprovado', ajustar: 'Ajuste pedido', retirar: 'Retirar' };
+  const STATE_CLASS = { aprovado: 'ok', ajustar: 'adjust', retirar: 'drop' };
+
+  let pack = null;              // conteudo.json — exported from the app's code
+  let verdicts = {};            // id -> { veredicto, nota, hash, em, resposta? }
+  let db = null, myId = null, readOnly = false;
+  let group = 'atividades', filter = 'pendente';
+  const drafts = {};            // unsaved choice/note per item, so a re-render keeps what she typed
+
+  try { const g = localStorage.getItem('revisao.grupo'); if (g) group = g; const f = localStorage.getItem('revisao.filtro'); if (f) filter = f; } catch {}
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+
+  // An item's state: a verdict counts only for the text it was given to.
+  function stateOf(item) {
+    const v = verdicts[item.id];
+    if (!v || !v.veredicto) return { kind: 'pendente' };
+    if (v.hash !== item.hash) return { kind: 'mudou', v };
+    return { kind: v.veredicto, v };
+  }
+  const isOpen = (s) => s.kind === 'pendente' || s.kind === 'mudou';
+
+  function matches(item) {
+    const s = stateOf(item);
+    if (filter === 'todos') return true;
+    if (filter === 'pendente') return isOpen(s);
+    if (filter === 'ajustar') return s.kind === 'ajustar';
+    return !isOpen(s);
+  }
+
+  function renderSummary() {
+    const box = $('summary'); box.replaceChildren();
+    for (const g of pack.grupos) {
+      const st = g.itens.map(stateOf);
+      const n = (k) => st.filter((s) => s.kind === k).length;
+      const done = st.filter((s) => !isOpen(s)).length;
+      const b = el('button', 'sum'); b.type = 'button'; b.setAttribute('aria-pressed', String(g.id === group));
+      b.append(el('div', 'name', g.titulo), el('div', 'count', `${done} de ${g.itens.length} decididos`));
+      const bar = el('div', 'bar'); bar.setAttribute('aria-hidden', 'true');
+      for (const [k, c] of [['aprovado', 'b-ok'], ['ajustar', 'b-adjust'], ['retirar', 'b-drop']]) {
+        const i = el('i', c); i.style.width = `${(100 * n(k)) / g.itens.length}%`; bar.append(i);
+      }
+      b.append(bar);
+      b.addEventListener('click', () => { group = g.id; try { localStorage.setItem('revisao.grupo', group); } catch {} render(); });
+      box.append(b);
+    }
+  }
+
+  function renderFilters() {
+    const items = currentGroup().itens;
+    const count = (f) => { const keep = filter; filter = f; const c = items.filter(matches).length; filter = keep; return c; };
+    for (const f of ['pendente', 'ajustar', 'feito', 'todos']) $('n-' + f).textContent = String(count(f));
+    for (const b of document.querySelectorAll('.chip')) b.setAttribute('aria-pressed', String(b.dataset.f === filter));
+  }
+
+  const currentGroup = () => pack.grupos.find((g) => g.id === group) || pack.grupos[0];
+
+  function fieldValue(valor, rotulo) {
+    const dd = el('dd');
+    if (Array.isArray(valor)) {
+      const list = el(rotulo === 'Passos' ? 'ol' : 'ul');
+      for (const v of valor) list.append(el('li', null, v));
+      dd.append(list);
+    } else dd.textContent = valor;
+    return dd;
+  }
+
+  function fmtDate(iso) { try { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }); } catch { return ''; } }
+
+  function card(item) {
+    const s = stateOf(item);
+    const a = el('article'); a.id = 'item-' + item.id;
+    const top = el('div', 'top');
+    const head = el('div'); head.style.minWidth = '0';
+    head.append(el('h2', null, item.titulo));
+    const meta = el('div', 'meta'); meta.append(document.createTextNode(item.linha + ' · '), el('code', null, item.id));
+    head.append(meta);
+    const badge = el('span', 'state');
+    if (s.kind === 'mudou') { badge.classList.add('changed'); badge.textContent = 'Atualizado, confira'; }
+    else if (s.kind === 'pendente') badge.textContent = 'Para revisar';
+    else { badge.classList.add(STATE_CLASS[s.kind]); badge.textContent = `${STATE_LABEL[s.kind]} · ${fmtDate(s.v.em)}`; }
+    top.append(head, badge); a.append(top);
+
+    const dl = el('dl');
+    for (const c of item.campos) { const d = el('div'); d.append(el('dt', null, c.rotulo), fieldValue(c.valor, c.rotulo)); dl.append(d); }
+    a.append(dl, el('p', 'origin', item.origem));
+
+    const v = verdicts[item.id];
+    if (v && (v.nota || v.resposta)) {
+      const r = el('div', 'reply');
+      if (v.nota) { const p = el('div'); p.append(el('strong', null, s.kind === 'mudou' ? 'Seu pedido anterior: ' : 'Sua nota: '), document.createTextNode(v.nota)); r.append(p); }
+      if (v.resposta) { const p = el('div'); p.style.marginTop = v.nota ? '6px' : '0'; p.append(el('strong', null, 'Claude: '), document.createTextNode(v.resposta)); r.append(p); }
+      a.append(r);
+    }
+
+    if (!readOnly) a.append(decision(item, s));
+    return a;
+  }
+
+  function decision(item, s) {
+    const d = drafts[item.id] || (drafts[item.id] = { veredicto: s.kind === 'mudou' || s.kind === 'pendente' ? null : s.kind, nota: s.kind === 'mudou' || s.kind === 'pendente' ? '' : (verdicts[item.id]?.nota || '') });
+    const box = el('div', 'decide');
+    const choices = el('div', 'choices'); choices.setAttribute('role', 'group'); choices.setAttribute('aria-label', 'Decisão para ' + item.titulo);
+    const noteId = 'nota-' + item.id.replace(/[^a-z0-9-]/gi, '-');
+    const lab = el('label', 'lab', 'O que mudar, ou um comentário (opcional ao aprovar)'); lab.htmlFor = noteId;
+    const ta = el('textarea'); ta.id = noteId; ta.value = d.nota;
+    const row = el('div', 'row');
+    const save = el('button', 'save', 'Salvar'); save.type = 'button';
+    const status = el('span', 'status'); status.setAttribute('role', 'status');
+    const sync = () => {
+      for (const b of choices.children) b.setAttribute('aria-pressed', String(b.dataset.v === d.veredicto));
+      const needsNote = d.veredicto === 'ajustar' && !d.nota.trim();
+      save.disabled = !d.veredicto || needsNote;
+      status.textContent = needsNote ? 'Escreva o que mudar para pedir ajuste.' : '';
+      status.classList.remove('err');
+    };
+    for (const [k, label] of Object.entries(VERDICTS)) {
+      const b = el('button', 'choice', label); b.type = 'button'; b.dataset.v = k;
+      b.addEventListener('click', () => { d.veredicto = d.veredicto === k ? null : k; sync(); });
+      choices.append(b);
+    }
+    ta.addEventListener('input', () => { d.nota = ta.value; sync(); });
+    save.addEventListener('click', async () => {
+      save.disabled = true; status.textContent = 'Salvando…';
+      const body = { veredicto: d.veredicto, nota: d.nota.trim(), hash: item.hash, titulo: item.titulo, em: new Date().toISOString() };
+      if (myId) body.por = myId;
+      try {
+        await db.collection('veredictos').doc(item.id).set(body);
+        delete drafts[item.id];
+        status.textContent = 'Salvo.';
+      } catch (e) {
+        if (e && e.code === 'invalid_argument') { readOnly = true; showNotice('Este acesso só permite ler. Peça ao João acesso de edição para registrar decisões.'); render(); return; }
+        status.textContent = e && e.code === 'unavailable' ? 'Não foi possível salvar agora. Tente de novo em alguns segundos.' : 'Não foi possível salvar. Tente de novo.';
+        status.classList.add('err'); save.disabled = false;
+      }
+    });
+    row.append(save, status);
+    box.append(choices, lab, ta, row);
+    sync();
+    return box;
+  }
+
+  function renderList() {
+    const g = currentGroup();
+    $('groupnote').textContent = g.nota;
+    const list = $('list'); list.replaceChildren();
+    const items = g.itens.filter(matches);
+    if (items.length === 0) {
+      list.append(el('div', 'empty', filter === 'pendente' ? `Nada para revisar em ${g.titulo}. Tudo decidido.` : 'Nenhum item aqui.'));
+      return;
+    }
+    for (const it of items) list.append(card(it));
+  }
+
+  function render() { if (!pack) return; renderSummary(); renderFilters(); renderList(); }
+
+  function showNotice(text) { const n = $('notice'); n.textContent = text; n.hidden = false; }
+
+  for (const b of document.querySelectorAll('.chip')) b.addEventListener('click', () => { filter = b.dataset.f; try { localStorage.setItem('revisao.filtro', filter); } catch {} render(); });
+
+  fetch('conteudo.json').then((r) => { if (!r.ok) throw new Error(String(r.status)); return r.json(); }).then((p) => {
+    pack = p; if (!pack.grupos.some((g) => g.id === group)) group = pack.grupos[0].id; render();
+  }).catch(() => { $('list').replaceChildren(el('div', 'empty', 'O conteúdo não carregou. Recarregue a página.')); });
+
+  (async () => {
+    const claude = window.claude;
+    if (!claude || !claude.use) { readOnly = true; showNotice('Abra esta página pelo link do claude.ai para registrar decisões. Aqui ela só mostra o conteúdo.'); render(); return; }
+    const [dbNs, user] = await Promise.all([claude.use('db'), claude.use('user')]);
+    if (!dbNs) { readOnly = true; showNotice('Entre com a sua conta do Claude para registrar decisões. Sem entrar, a página só mostra o conteúdo.'); render(); return; }
+    db = dbNs;
+    if (user) {
+      myId = await user.id();
+      if ((await user.can('data.write')) === false) { readOnly = true; showNotice('Este acesso só permite ler. Peça ao João acesso de edição para registrar decisões.'); }
+    }
+    db.collection('veredictos').onSnapshot((snap) => {
+      const next = {};
+      for (const d of snap.docs) next[d.id] = d.data();
+      verdicts = next; render();
+    }, () => { showNotice('As decisões salvas não carregaram. Recarregue a página.'); });
+  })();
+})();
+</script>

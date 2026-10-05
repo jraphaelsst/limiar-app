@@ -11,6 +11,8 @@ Visual values: `src/theme/` (never literal colours/sizes/fonts in components).
   matching `agents/<key>/LEARNINGS.md` **in the same commit** (format in `agents/README.md`).
 - Decisions that need João or Mônica go to the Decision Board (https://claude.ai/artifact/HKV3ETARxcEojhpwGjsmTf),
   not into code as assumptions; once decided, record them in `docs/design/decisions.md`.
+- Mônica reviews content on her review page (`tools/revisao/README.md`): verdicts live in its database;
+  read them there and apply them to `src/data/*` — never mark content `revisado` without her verdict.
 
 ## Verify before claiming done
 `npx tsc --noEmit` → `npx expo lint` → `npx jest` → `CI=1 npx expo export --platform web --output-dir <tmp> --clear` (always `--clear`: in a worktree sharing `node_modules`, Metro reuses another tree's cache and exits 0 with the wrong bundle) → device (Expo Go). Say which ran.

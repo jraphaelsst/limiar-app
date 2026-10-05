@@ -49,7 +49,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "test": "jest",
-    "safety:export": "SAFETY_EXPORT=1 jest src/safety/__tests__/safety-pack.test.ts"
+    "safety:export": "SAFETY_EXPORT=1 jest src/safety/__tests__/safety-pack.test.ts",
+    "review:export": "REVIEW_EXPORT=1 jest src/data/__tests__/review-pack.test.ts"
   },
   "private": true,
   "jest": {
