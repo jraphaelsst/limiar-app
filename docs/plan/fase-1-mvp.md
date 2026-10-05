@@ -22,7 +22,7 @@ admin básico. A Fase 0 (protótipo clicável, dados locais, sem IA/back-end) es
 | 07 | Resultado atividade | feito | `sofa` (uma por vez) |
 | 08 | Atividade passo a passo | **onda 1** | `atividade/[id]` |
 | 09 | Pós-atividade | **onda 1** (sem texto) · **onda 2** (frase opcional) | |
-| 10 | Explorar mundos | feito (5 mundos "em breve" aguardam conteúdo) | `(tabs)/explorar` |
+| 10 | Explorar mundos | feito — os 6 mundos abrem tela real: atividades marcadas com o mundo (`worlds`), jogos e temas de reflexão relacionados; vazio honesto enquanto o conteúdo é escrito. "Experimenta isso" abre o catálogo | `(tabs)/explorar`, `mundo/[id]`, `atividades` · seleção em `src/data/world-content.ts` |
 | 11 | Jogo Ainda gosto disso? | feito | `jogos/ainda-gosto` |
 | 12 | Jogo Isso ainda é meu? | feito | `jogos/isso-ainda-e-meu` |
 | 13 | Pergunta aberta — tema | **onda 2** | |

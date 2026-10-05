@@ -1,11 +1,11 @@
-import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { AppText, BackBar, ListRow, Screen } from '@/components/ui';
-import { activities, categoryLabel, formatDuration } from '@/data/activities';
+import { ActivityRow } from '@/components/ActivityRow';
+import { AppText, BackBar, Screen } from '@/components/ui';
+import { activities } from '@/data/activities';
 import { space } from '@/theme';
 
-/** "Experimenta isso" — the full Phase 0 catalog. */
+/** "Experimenta isso" — the full Phase 0 catalog; also where that world opens from Explorar (worldRoute). */
 export default function Atividades() {
   return (
     <Screen edges={['top', 'bottom']}>
@@ -18,12 +18,7 @@ export default function Atividades() {
       </View>
       <View style={styles.list}>
         {activities.map((a) => (
-          <ListRow
-            key={a.activityId}
-            title={a.title}
-            subtitle={`${categoryLabel[a.category]} · ${formatDuration(a.durationMin)}`}
-            onPress={() => router.push(`/atividade/${a.activityId}`)}
-          />
+          <ActivityRow key={a.activityId} activity={a} />
         ))}
       </View>
     </Screen>

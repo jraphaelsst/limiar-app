@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
+import { ActivityRow } from '@/components/ActivityRow';
 import { AppText, Button, ListRow, Screen, SectionHeader } from '@/components/ui';
-import { categoryLabel, findActivity, formatDuration, type Activity } from '@/data/activities';
+import { findActivity, type Activity } from '@/data/activities';
 import { findReflection, findTheme, reflectionsFor, type Reflection } from '@/data/reflexoes';
 import { useAppState } from '@/state/app-state';
 import { space } from '@/theme';
@@ -40,12 +41,7 @@ export default function Salvos() {
               <SectionHeader title="Atividades" />
               <View style={styles.list}>
                 {saved.map((a) => (
-                  <ListRow
-                    key={a.activityId}
-                    title={a.title}
-                    subtitle={`${categoryLabel[a.category]} · ${formatDuration(a.durationMin)}`}
-                    onPress={() => router.push(`/atividade/${a.activityId}`)}
-                  />
+                  <ActivityRow key={a.activityId} activity={a} />
                 ))}
               </View>
             </View>
