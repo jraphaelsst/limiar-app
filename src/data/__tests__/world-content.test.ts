@@ -43,7 +43,6 @@ describe('activitiesForWorld', () => {
   const pool = [
     mk('a', { worlds: ['tempo'] }),
     mk('b', { worlds: ['tempo', 'mundo'] }),
-    mk('c'), // untagged ⇒ in no world
     mk('d', { worlds: [] }),
     mk('e', { worlds: ['tempo'], reviewStatus: 'retirado' }),
     mk('f', { worlds: ['nos-dois'] }),
@@ -56,9 +55,8 @@ describe('activitiesForWorld', () => {
     expect(ids('nos-dois')).toEqual(['f']);
   });
 
-  test('missing or empty `worlds` is "not in any world"', () => {
+  test('empty `worlds` is "not in any world"', () => {
     for (const w of Object.keys(worldIds) as WorldId[]) {
-      expect(ids(w)).not.toContain('c');
       expect(ids(w)).not.toContain('d');
     }
   });

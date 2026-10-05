@@ -37,11 +37,10 @@ export const gameWorlds: Readonly<Record<GameId, readonly WorldId[]>> = {
 };
 
 /**
- * The activities of one world, in catalog order. An activity without `worlds` is in no world (the field
- * is optional until every activity is tagged); retired activities are left out.
+ * The activities of one world, in catalog order; retired activities are left out.
  */
 export function activitiesForWorld(world: WorldId, pool: readonly Activity[] = catalog): readonly Activity[] {
-  return pool.filter((a) => a.reviewStatus !== 'retirado' && (a.worlds ?? []).includes(world));
+  return pool.filter((a) => a.reviewStatus !== 'retirado' && a.worlds.includes(world));
 }
 
 /**

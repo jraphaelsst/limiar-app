@@ -13,4 +13,4 @@ Visual values: `src/theme/` (never literal colours/sizes/fonts in components).
   not into code as assumptions; once decided, record them in `docs/design/decisions.md`.
 
 ## Verify before claiming done
-`npx tsc --noEmit` → `CI=1 npx expo export --platform web --output-dir <tmp>` → device (Expo Go). Say which ran.
+`npx tsc --noEmit` → `CI=1 npx expo export --platform web --output-dir <tmp> --clear` (always `--clear`: in a worktree sharing `node_modules`, Metro reuses another tree's cache and exits 0 with the wrong bundle) → device (Expo Go). Say which ran.
