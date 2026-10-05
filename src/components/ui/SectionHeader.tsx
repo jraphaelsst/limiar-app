@@ -14,7 +14,7 @@ export function SectionHeader({ title, action }: Props) {
         {title}
       </AppText>
       {action && (
-        <Pressable accessibilityRole="link" onPress={action.onPress} hitSlop={12} style={({ pressed }) => [styles.action, pressed && { opacity: 0.6 }]}>
+        <Pressable accessibilityRole="link" onPress={action.onPress} hitSlop={14} style={({ pressed }) => [styles.action, pressed && { opacity: 0.6 }]}>
           <AppText variant="caption" color="textBody">
             {action.label}
           </AppText>

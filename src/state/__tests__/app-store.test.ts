@@ -5,7 +5,7 @@ import { createAppStore, createWriteQueue, isGameAResults, type Snapshot } from 
 import { KEYS } from '@/state/storage';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+  jest.requireActual('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
 const setItem = AsyncStorage.setItem as jest.Mock;

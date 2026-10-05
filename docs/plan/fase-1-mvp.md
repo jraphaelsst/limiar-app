@@ -114,4 +114,24 @@ conhecimento curada com revisões e busca (`stores/studio_knowledge.py`), versõ
 ## 8. Critérios de aceite (spec §20) — como serão verificados
 
 `npx tsc --noEmit` · `npx jest` (inclui a suíte de segurança com recall de vermelho = 100% no corpus e falso
-positivo de verde ≤ 5%) · `npx expo lint` · export web · aparelho (Expo Go) com leitor de tela e fonte grande.
+positivo de verde ≤ 5%) · `npx expo lint` (0 erros; no CI depois do `tsc`) · export web · aparelho (Expo Go) com
+leitor de tela e fonte grande.
+
+**Acessibilidade — o que já é automático (jest, a cada push):**
+- Contraste WCAG 2.2 calculado a partir dos tokens (`src/theme/contrast.ts` + `__tests__/contrast.test.ts`): texto ≥ 4,5:1
+  em todo par texto × fundo usado, não-texto (bordas de campo, foco, ícones que significam) ≥ 3:1; falha se a UI usar um
+  fundo que a lista não cobre.
+- Leitor de tela, estático (`src/lib/__tests__/accessibility.test.ts`): todo botão/toque tem papel e nome, grupos de
+  escolha têm nome, títulos saem como `header`, imagens têm nome ou ficam ocultas, formas decorativas ocultas, nenhum
+  `allowFontScaling={false}`, alvos de toque ≥ 48 pt nos componentes base.
+
+**Ainda exige aparelho (Expo Go, iOS + Android):**
+- VoiceOver e TalkBack nos fluxos principais: ordem de leitura, foco ao trocar de passo/tela (título recebe o foco),
+  anúncio de erros e confirmações (`accessibilityLiveRegion`), como os rótulos são falados (ex.: "Voltar ao início").
+- Fonte do sistema no máximo (iOS "Texto maior" 310%/Acessibilidade, Android 200%) e zoom de tela: nada cortado nas
+  telas Início, Atividade (passos), Sofá, Jogos, Reflexão, Perfil/Privacidade, Ajuda; a barra de abas com 4 rótulos
+  (a altura agora cresce com a escala; conferir quebra de linha em "Explorar"/"Salvos"); chips em caixa alta; botões
+  com rótulo longo ("Se estiver difícil agora, veja onde buscar ajuda"); `CheckItem` com número em fonte grande.
+- Contraste percebido em sol forte/brilho baixo; o contorno do `OptionPill` não selecionado (decisão aberta em
+  `docs/design/decisions.md` 2026-10-05).
+- Reduzir movimento do sistema ligado: nenhuma animação essencial.

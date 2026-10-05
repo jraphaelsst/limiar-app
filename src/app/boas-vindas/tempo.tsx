@@ -9,6 +9,8 @@ import { timeOptions, useAppState } from '@/state/app-state';
 import { useOnboardingDraft } from '@/state/onboarding-draft';
 import { space } from '@/theme';
 
+const question = 'Quanto tempo livre costuma aparecer?';
+
 /**
  * Last onboarding step. The notifications step (spec §4.1.6) is left out of
  * Phase 0: there are no notifications yet, and a preference that does nothing
@@ -43,8 +45,8 @@ export default function Tempo() {
         </View>
       }>
       <BackBar right={<HelpButton />} />
-      <AppText variant="h1">Quanto tempo livre costuma aparecer?</AppText>
-      <View style={styles.options} accessibilityRole="radiogroup">
+      <AppText variant="h1">{question}</AppText>
+      <View style={styles.options} accessibilityRole="radiogroup" accessibilityLabel={question}>
         {timeOptions.map((o) => (
           <OptionPill
             key={o.value}

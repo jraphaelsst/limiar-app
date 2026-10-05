@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icons } from '@/components/ui';
@@ -15,6 +16,9 @@ const tabs: readonly { name: string; title: string; icon: Icon }[] = [
 
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
+  // The label scales with the OS text size (never capped); the bar grows with it or the label clips.
+  const { fontScale } = useWindowDimensions();
+  const labelGrowth = Math.round(typography.tabLabel.lineHeight * Math.max(0, fontScale - 1));
   return (
     <Tabs
       screenOptions={{
@@ -25,7 +29,7 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: color.surface,
           borderTopColor: color.divider,
-          height: size.tabBarContent + insets.bottom, // default 49 pt clips 12-pt labels
+          height: size.tabBarContent + insets.bottom + labelGrowth, // default 49 pt clips 12-pt labels
           paddingTop: space[2],
         },
         sceneStyle: { backgroundColor: color.background },

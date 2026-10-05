@@ -41,8 +41,8 @@ export function StepItem({ n, text }: { n: number; text: string }) {
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
   dot: {
-    width: 26,
-    height: 26,
+    minWidth: 26,
+    minHeight: 26,
     marginTop: 1,
     borderRadius: radius.pill,
     backgroundColor: color.tintWine,
