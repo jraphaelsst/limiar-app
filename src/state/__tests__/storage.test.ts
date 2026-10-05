@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { KEYS, clearAll, load, save } from '@/state/storage';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+  jest.requireActual('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
 const isIdList = (v: unknown): v is string[] => Array.isArray(v) && v.every((x) => typeof x === 'string');

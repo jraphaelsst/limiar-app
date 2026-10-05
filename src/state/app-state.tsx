@@ -91,6 +91,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     setSavedIdsState(next);
   }, []);
 
+  // The listener only runs on store events (after init / queued writes), never during render, so the ref
+  // read inside setSavedIds is safe; the React Compiler rule cannot see through the factory.
+  // eslint-disable-next-line react-hooks/refs
   const [store] = useState(() =>
     createAppStore((snap: Snapshot, { idle }) => {
       setPrefs(snap.prefs);

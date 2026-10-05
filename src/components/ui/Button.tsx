@@ -53,7 +53,7 @@ export function Button({ label, variant = 'primary', arrow = false, fullWidth = 
 const styles = StyleSheet.create({
   base: { alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill },
   primary: { backgroundColor: color.primary, minHeight: size.buttonHeight, paddingHorizontal: space[6] },
-  secondary: { backgroundColor: color.surface, minHeight: 44, paddingHorizontal: space[5] },
+  secondary: { backgroundColor: color.surface, minHeight: size.touchMin, paddingHorizontal: space[5] },
   quiet: { minHeight: size.touchMin, paddingHorizontal: space[2] },
   full: { alignSelf: 'stretch' },
   disabled: { backgroundColor: color.surfaceAccent },

@@ -6,7 +6,7 @@ import { buildExportText } from '@/state/app-state';
 import { KEYS } from '@/state/storage';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
+  jest.requireActual('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
 const setItem = AsyncStorage.setItem as jest.Mock;

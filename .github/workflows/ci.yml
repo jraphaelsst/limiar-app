@@ -1,4 +1,4 @@
-# limiar-app CI — typecheck + the full jest suite (incl. the safety corpus and the safety-pack
+# limiar-app CI — typecheck + lint + the full jest suite (incl. the safety corpus and the safety-pack
 # byte-equality + Python-regex parity checks, which need python3: preinstalled on ubuntu-latest).
 name: CI
 
@@ -23,4 +23,5 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsc --noEmit
+      - run: npx expo lint
       - run: npx jest --ci
