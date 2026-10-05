@@ -12,6 +12,8 @@ import {
 } from '@/data/activities';
 import { worlds, type WorldId } from '@/data/worlds';
 
+import { avoidedWord, voiceProblems } from './voice-rules';
+
 // Record<Union, true> fails to compile if a member is missing or extra — the runtime check stays exhaustive.
 const categories: Record<Category, true> = {
   criar: true,
@@ -151,17 +153,9 @@ describe('worlds (spec §3.1)', () => {
 
 describe('voice of the drafts (spec §2, §2.1; agents/nos-no-limiar revisar-atividade)', () => {
   const drafts = activities.filter((a) => a.activityId >= idOf(16));
-  const textOf = (a: (typeof activities)[number]) =>
-    [a.title, a.summary, ...a.materials, ...a.steps, a.variation ?? ''].join('\n').toLowerCase();
+  const textOf = (a: (typeof activities)[number]) => [a.title, a.summary, ...a.materials, ...a.steps, a.variation ?? ''].join('\n');
 
-  test.each(drafts.map((a) => [a.activityId, a] as const))('%s: no exclamation, no "você precisa/deve"', (_id, a) => {
-    expect(textOf(a)).not.toContain('!');
-    expect(textOf(a)).not.toMatch(/\bvocê (precisa|deve)\b/);
-  });
-
-  test.each(drafts.map((a) => [a.activityId, a] as const))('%s: no avoid-list, drama or clinical word', (_id, a) => {
-    const avoid =
-      /(?<![\p{L}])(burnout|esgotamento|esgotada|sobrecarga|resiliente|resiliência|empoderamento|autoconhecimento|guerreira|forte|vazio|vazia|dor|depressão|ansiedade|trauma|luto|sofrimento|ninho vazio|síndrome|diagnóstico|transtorno|terapia|terapêutic\p{L}*|inconsciente|cura|curar|emagrecer|peso|calorias|álcool|vinho|cerveja|drinque)(?![\p{L}])/u;
-    expect(textOf(a)).not.toMatch(avoid);
+  test.each(drafts.map((a) => [a.activityId, a] as const))('%s reads in the app voice', (_id, a) => {
+    expect({ problems: voiceProblems(textOf(a)), word: avoidedWord(textOf(a)) }).toEqual({ problems: [], word: undefined });
   });
 });

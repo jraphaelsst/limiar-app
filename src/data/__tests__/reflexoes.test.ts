@@ -9,6 +9,8 @@ import {
   type ThemeId,
 } from '@/data/reflexoes';
 
+import { avoidedWord, voiceProblems } from './voice-rules';
+
 // Record<Union, true> fails to compile if a member is missing or extra — the runtime check stays exhaustive.
 const themeIds: Record<ThemeId, true> = {
   'filhos-adultos': true,
@@ -105,20 +107,7 @@ describe.each(reflexoes.map((r) => [r.reflectionId, r] as const))('%s', (_id, r)
   });
 
   // The voice rules (spec §2, §2.1, §7.2; agents/nos-no-limiar revisar-texto) that a test can see.
-  test('voice: no exclamation, no prescriptive "você precisa/deve", no false intimacy', () => {
-    const t = textOf(r).toLowerCase();
-    expect(t).not.toContain('!');
-    expect(t).not.toMatch(/\bvocê (precisa|deve)\b/);
-    expect(t).not.toMatch(/estou aqui|conte comigo|não vou te abandonar|estamos juntas/);
-  });
-
-  test('voice: no word from the avoid list, no drama words, no clinical words', () => {
-    const avoid =
-      /\b(burnout|esgotamento|esgotada|sobrecarga|resiliente|resiliência|empoderamento|autoconhecimento|guerreira|forte|vazio|vazia|dor|depressão|ansiedade|trauma|luto|sofrimento|ninho vazio|síndrome|diagnóstico|transtorno|terapia|inconsciente)\b/u;
-    expect(textOf(r).toLowerCase()).not.toMatch(avoid);
-  });
-
-  test('voice: no "não é X, é Y"', () => {
-    expect(textOf(r).toLowerCase()).not.toMatch(/não é [^.?]*, é /);
+  test('reads in the app voice', () => {
+    expect({ problems: voiceProblems(textOf(r)), word: avoidedWord(textOf(r)) }).toEqual({ problems: [], word: undefined });
   });
 });
