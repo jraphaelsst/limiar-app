@@ -1,6 +1,9 @@
 /** The six content worlds — spec §3.1, verbatim titles and scopes. */
+/** Stable world ids — the join key between worlds and content (activities, reflections). */
+export type WorldId = 'quem-sou' | 'filhos-adultos' | 'tempo' | 'nos-dois' | 'mundo' | 'experimenta';
+
 export type World = {
-  id: string;
+  id: WorldId;
   title: string;
   description: string;
   /** Destination when the world already has real content in Phase 0; absent ⇒ not pressable yet. */

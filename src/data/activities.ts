@@ -18,6 +18,8 @@
  * Ids are stable and never reused: an activity leaves the catalog by `retirado`, not by deletion.
  */
 
+import type { WorldId } from './worlds';
+
 export type Category = 'criar' | 'aprender' | 'sair' | 'conectar' | 'organizar' | 'explorar' | 'refletir';
 export type Energy = 'baixa' | 'normal' | 'alta';
 export type Environment = 'casa' | 'fora' | 'ambos';
@@ -41,6 +43,11 @@ export type Activity = {
   steps: readonly string[];
   /** Spec §4.4 — optional; see the header for who writes it. */
   variation?: string;
+  /**
+   * Spec §3.1 worlds this activity belongs to (one or more). A proposal like every other field of a
+   * draft — Mônica may move it. Optional only until every activity is tagged; then it becomes required.
+   */
+  worlds?: readonly WorldId[];
   safetyTags: readonly string[];
   sourceNote: string;
   reviewStatus: ReviewStatus;
