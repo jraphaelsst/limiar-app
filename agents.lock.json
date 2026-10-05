@@ -78,6 +78,10 @@
       {
         "impressao": "04f6b064f3b5c18e",
         "nota": "nome de família tipográfica (Cormorant Garamond)"
+      },
+      {
+        "impressao": "cd712d64eadb6c9b",
+        "nota": "nome de método da API do compilador TypeScript (getLineAndCharacterOfPosition) no teste de acessibilidade"
       }
     ]
   }
