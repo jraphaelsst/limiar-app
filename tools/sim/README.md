@@ -51,6 +51,9 @@ Run loops inside `sim.sh` (bash), not in an ad-hoc `zsh -c` line: zsh does not s
   `sweep` terminates Expo Go after each size change.
 - **A deep link to `/` does not navigate** (Início stays whatever was on screen); `sweep` reaches Início by relaunching.
 - Deep link shape: `exp://127.0.0.1:8081/--/<route>`.
+- **Expo Go's blue dev-tools button covers the top-right corner**, where the app puts its header actions (→ next step,
+  lifebuoy). It exists only in development; judge that corner on a real build, or in code.
+- **After a Mac restart the first `simctl launch` can take ~100 s** (post-boot system indexing); later links open in seconds.
 - **Use the dev server that is already running (8081).** A second Metro on 8082 (`CI=1`, to preview a branch) made
   `openurl` time out on most links and left Expo Go on "Opening project…" (2026-10-05). To preview a branch, serve it
   from the main checkout instead, or merge and sweep.
@@ -89,6 +92,11 @@ Reachable only after onboarding unless marked *always*.
 
 On-device state (all in AsyncStorage, `src/state/storage.ts`): `limiar:v1:prefs` (onboarding done),
 `:saved`, `:saved-reflections`, `:game-a-results`, `:feedback` — ids and enums only, never text.
+
+## Verification sweep, 2026-10-06 (after the fixes)
+All max-size defects below confirmed fixed (headings wrap whole words, content first, nothing pinned over text).
+Follow-ups: the category chip now also caps at 2×; buttons below the first screen at max size were not captured
+(no scrolling without a tap tool); the → arrow and lifebuoy sit under the dev-tools button in Expo Go.
 
 ## Findings — first sweep, 2026-10-05 (iPhone 17 simulator, iOS 27)
 Screens verified against their names before judging. Default text size: the app is sound.
