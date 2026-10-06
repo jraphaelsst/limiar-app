@@ -48,6 +48,8 @@ export const nonTextOn: readonly (readonly [fg: Token, bg: Token])[] = [
  * is covered by the lists above.
  */
 export const contrastExempt = {
+  outlineSoft:
+    'unselected OptionPill outline (≈2.1:1): its text label identifies the control; João 2026-10-05 chose "a little darker" over the 3:1 `border` look',
   divider: 'decorative hairline; never the only boundary of a control (WCAG 1.4.11 applies to required visuals)',
   illustrationRed: 'illustration only (palette.sun), never text or a control',
   disabledButton: 'disabled controls are exempt (WCAG 1.4.3): textBody on surfaceAccent is 4.25:1 by design',

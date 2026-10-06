@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     backgroundColor: color.surface,
     borderWidth: 1,
-    borderColor: color.divider,
+    borderColor: color.outlineSoft,
   },
   selected: { backgroundColor: color.primary, borderColor: color.primary },
 });

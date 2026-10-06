@@ -24,6 +24,7 @@ export const palette = {
   sun: '#782B20', // ILLUSTRATION ONLY — collage circle; never for UI text or controls
   border: '#8E8172', // functional outline (inputs) — 3:1 on surfaces
   hairline: '#DDD4C6', // decorative divider — not a control boundary
+  taupe: '#B3A692', // soft control outline (unselected option pill) — ≈2.1:1, between hairline and border; João 2026-10-05
   moss: '#36563E',
   brick: '#8B2420',
   ochre: '#73521D',
@@ -55,6 +56,7 @@ export const color = {
 
   border: palette.border,
   divider: palette.hairline,
+  outlineSoft: palette.taupe,
   focus: palette.wine,
 
   success: palette.moss,
