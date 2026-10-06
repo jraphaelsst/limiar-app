@@ -7,7 +7,7 @@ import { color, space, typography, type TypographyVariant } from '@/theme';
 const samples: Record<TypographyVariant, string> = {
   display: 'Uma nova fase.',
   h1: 'Mais tempo para você',
-  h2: 'Olá, que bom ter você aqui!',
+  h2: 'Olá, que bom ter você aqui.',
   h3: 'O que combina com hoje?',
   cardTitle: 'Mapa da casa da infância',
   button: 'Começar agora',

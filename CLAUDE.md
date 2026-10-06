@@ -16,3 +16,4 @@ Visual values: `src/theme/` (never literal colours/sizes/fonts in components).
 
 ## Verify before claiming done
 `npx tsc --noEmit` → `npx expo lint` → `npx jest` → `CI=1 npx expo export --platform web --output-dir <tmp> --clear` (always `--clear`: in a worktree sharing `node_modules`, Metro reuses another tree's cache and exits 0 with the wrong bundle) → device (Expo Go). Say which ran.
+Simulator walk (every screen, default + max text, no tapping): `tools/sim/README.md` — it also holds the map of routes.

@@ -24,7 +24,7 @@ export default function Home() {
       </View>
 
       <AppText variant="h2">
-        Olá,{'\n'}que bom ter você aqui!
+        Olá,{'\n'}que bom ter você aqui.
       </AppText>
 
       <SofaCard onStart={() => router.push('/sofa')} />
