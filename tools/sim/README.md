@@ -54,6 +54,9 @@ Run loops inside `sim.sh` (bash), not in an ad-hoc `zsh -c` line: zsh does not s
 - **Use the dev server that is already running (8081).** A second Metro on 8082 (`CI=1`, to preview a branch) made
   `openurl` time out on most links and left Expo Go on "Opening project…" (2026-10-05). To preview a branch, serve it
   from the main checkout instead, or merge and sweep.
+- **When even `simctl launch host.exp.Exponent` hangs**, the simulator service is wedged (happened right after the
+  8082 attempt; `killall com.apple.CoreSimulator.CoreSimulatorService` + reboot did not clear it). Fall back to the
+  phone and note it; next session try `xcrun simctl erase <udid>` (wipes Expo Go: reinstall with `npx expo start --ios`).
 - The tall, detached-looking accents in headings ("Nós", "você") are the Cormorant typeface's design, not an encoding
   problem (the source is NFC; checked) — a taste call, not a defect.
 
