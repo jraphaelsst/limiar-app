@@ -5,7 +5,7 @@ import {
   backGoesToPreviousCard,
   cardLabel,
   choiceLabel,
-  choicesFor,
+  choiceFor,
   isLastCard,
   nextCard,
   previousCard,
@@ -42,20 +42,16 @@ describe('card navigation (screen 14)', () => {
     expect(previousCard(1, 1)).toBe(1);
   });
 
-  test('at most two choices, ever (spec §20); the last card swaps "pensar mais" for "outro tema"', () => {
-    expect(choicesFor(0, 3)).toEqual({ primary: 'pensar-mais', secondary: 'fazer-algo' });
-    expect(choicesFor(1, 3)).toEqual({ primary: 'pensar-mais', secondary: 'fazer-algo' });
-    expect(choicesFor(2, 3)).toEqual({ primary: 'fazer-algo', secondary: 'outro-tema' });
-    for (let i = 0; i < 3; i++) {
-      const c = choicesFor(i, 3);
-      expect(c.primary).not.toBe(c.secondary);
-      expect(Object.keys(c)).toHaveLength(2);
-    }
+  test('one action per card: "pensar mais" while there are more cards, "outro tema" on the last (João 2026-10-05)', () => {
+    expect(choiceFor(0, 3)).toBe('pensar-mais');
+    expect(choiceFor(1, 3)).toBe('pensar-mais');
+    expect(choiceFor(2, 3)).toBe('outro-tema');
+    expect(choiceFor(0, 1)).toBe('outro-tema');
   });
 
   test('labels are the spec §4.7 words', () => {
     expect(choiceLabel['pensar-mais']).toBe('Quero pensar mais');
-    expect(choiceLabel['fazer-algo']).toBe('Prefiro fazer algo agora');
+    expect(choiceLabel['outro-tema']).toBe('Escolher outro tema');
   });
 
   test('progress in words', () => {

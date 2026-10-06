@@ -4,7 +4,7 @@ import { StyleSheet, View, type Text } from 'react-native';
 
 import { ActivityNotFound } from '@/components/ActivityNotFound';
 import { useBookmark } from '@/components/Bookmark';
-import { AppText, BackBar, Button, Screen } from '@/components/ui';
+import { AppText, BackBar, Button, IconButton, Icons, Screen } from '@/components/ui';
 import { findActivity, type Activity } from '@/data/activities';
 import { useFocusOnChange } from '@/lib/a11y';
 import { backGoesToPreviousStep, isLastStep, nextStep, previousStep, stepLabel } from '@/lib/steps';
@@ -23,10 +23,11 @@ export default function StepsRoute() {
 }
 
 /**
- * Screen 08 "Atividade passo a passo" (spec §19): one step at a time, progress in words,
- * Voltar/Próximo, the activity's variation when it has one, and the spec §4.4 actions
- * (Concluir · Guardar · Outra ideia · Sair sem concluir). Back after the first step goes to
- * the previous step (decision 2026-10-03, one mechanism app-wide: usePreviousStepOnBack).
+ * Screen 08 "Atividade passo a passo" (spec §19): one step at a time, progress in words, the
+ * activity's variation when it has one, and the spec §4.4 actions (Concluir · Guardar · Outra ideia ·
+ * Sair sem concluir). Moving between steps is the arrows at the top (João 2026-10-05): ← is the
+ * previous step (or leaves, on the first one — the same back as the system gesture, decision
+ * 2026-10-03 usePreviousStepOnBack), → the next step; "Concluir" appears at the bottom on the last step.
  */
 function Steps({ activity: a, from }: { activity: Activity; from: From | undefined }) {
   const total = a.steps.length;
@@ -71,15 +72,22 @@ function Steps({ activity: a, from }: { activity: Activity; from: From | undefin
       edges={['top', 'bottom']}
       footer={
         <View style={styles.actions}>
-          <Button label={last ? 'Concluir' : 'Próximo'} arrow={!last} fullWidth onPress={next} />
+          {last && <Button label="Concluir" fullWidth onPress={next} />}
           <View style={styles.secondary}>
-            {step > 0 && <Button variant="quiet" label="Voltar ao passo anterior" onPress={() => setStep(previousStep(step))} />}
             <Button variant="quiet" label="Outra ideia" onPress={another} />
             <Button variant="quiet" label="Sair sem concluir" onPress={exit} />
           </View>
         </View>
       }>
-      <BackBar right={bookmark.button} />
+      <BackBar
+        backLabel={step > 0 ? 'Passo anterior' : 'Voltar'}
+        right={
+          <>
+            {bookmark.button}
+            {!last && <IconButton icon={Icons.ArrowRight} label="Próximo passo" onPress={next} />}
+          </>
+        }
+      />
       {bookmark.error}
       <View style={styles.block}>
         <AppText variant="label" color="textBody">

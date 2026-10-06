@@ -6,7 +6,12 @@ import { color, size, space } from '@/theme';
 
 type Props = {
   children: ReactNode;
-  /** Pinned under the scroll area (e.g. a page CTA). Gets an opaque background. */
+  /**
+   * The page's actions (e.g. its CTA). Not pinned: it is the END of the scrolling content, pushed to the
+   * bottom of the screen when the page is shorter than the screen. Pinned, it covered the content at large
+   * text sizes (simulator sweep 2026-10-05: half the screen on the step view, all of it on reflection cards);
+   * in the flow it looks the same at normal sizes and scrolls with the content when the text is large.
+   */
   footer?: ReactNode;
   /** Tab screens: the tab bar already handles the bottom inset. */
   edges?: readonly Edge[];
@@ -17,7 +22,12 @@ type Props = {
 export function Screen({ children, footer, edges = ['top'], scroll = true }: Props) {
   const { width } = useWindowDimensions();
   const gutter = width < 360 ? size.gutterCompact : size.gutter;
-  const inner = <View style={[styles.column, { paddingHorizontal: gutter }]}>{children}</View>;
+  const inner = (
+    <View style={[styles.column, { paddingHorizontal: gutter }]}>
+      {children}
+      {footer && <View style={styles.footer}>{footer}</View>}
+    </View>
+  );
   return (
     <SafeAreaView edges={edges} style={styles.root}>
       {scroll ? (
@@ -27,15 +37,15 @@ export function Screen({ children, footer, edges = ['top'], scroll = true }: Pro
       ) : (
         <View style={[styles.scroll, styles.fill]}>{inner}</View>
       )}
-      {footer && <View style={[styles.footer, { paddingHorizontal: gutter }]}>{footer}</View>}
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: color.background },
-  scroll: { paddingTop: space[2], paddingBottom: space[8] },
+  // flexGrow lets the column fill a short page, so `footer`'s marginTop:'auto' can push it to the bottom.
+  scroll: { flexGrow: 1, paddingTop: space[2], paddingBottom: space[6] },
   fill: { flex: 1 },
-  column: { width: '100%', maxWidth: size.readingMax, alignSelf: 'center', gap: space[6] },
-  footer: { backgroundColor: color.background, paddingTop: space[3], paddingBottom: space[4], width: '100%', maxWidth: size.readingMax, alignSelf: 'center' },
+  column: { flexGrow: 1, width: '100%', maxWidth: size.readingMax, alignSelf: 'center', gap: space[6] },
+  footer: { marginTop: 'auto', paddingTop: space[2] },
 });

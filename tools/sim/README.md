@@ -51,6 +51,9 @@ Run loops inside `sim.sh` (bash), not in an ad-hoc `zsh -c` line: zsh does not s
   `sweep` terminates Expo Go after each size change.
 - **A deep link to `/` does not navigate** (Início stays whatever was on screen); `sweep` reaches Início by relaunching.
 - Deep link shape: `exp://127.0.0.1:8081/--/<route>`.
+- **Use the dev server that is already running (8081).** A second Metro on 8082 (`CI=1`, to preview a branch) made
+  `openurl` time out on most links and left Expo Go on "Opening project…" (2026-10-05). To preview a branch, serve it
+  from the main checkout instead, or merge and sweep.
 - The tall, detached-looking accents in headings ("Nós", "você") are the Cormorant typeface's design, not an encoding
   problem (the source is NFC; checked) — a taste call, not a defect.
 
@@ -87,7 +90,7 @@ On-device state (all in AsyncStorage, `src/state/storage.ts`): `limiar:v1:prefs`
 ## Findings — first sweep, 2026-10-05 (iPhone 17 simulator, iOS 27)
 Screens verified against their names before judging. Default text size: the app is sound.
 
-**At the largest text size (AX5), ranked by impact — open, not fixed yet:**
+**At the largest text size (AX5), ranked by impact — fixed 2026-10-05 (decisions.md "Large text and simpler actions"):**
 1. **Fixed bottom actions swallow the content.** Activity card and step-by-step (`/atividade/<id>`, `/passos`): the footer
    (Bora/Próximo + 2–3 links) takes half the screen and covers the title and the step text. Reflection cards
    (`/reflexao/<tema>`): the footer takes the whole screen. Fix: at large font scales, put the actions inside the scroll view.

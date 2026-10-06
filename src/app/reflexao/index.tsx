@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
-import { HelpLink } from '@/components/HelpLink';
+import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, ListRow, Screen } from '@/components/ui';
 import { themes } from '@/data/reflexoes';
 import { space } from '@/theme';
@@ -13,8 +13,8 @@ import { space } from '@/theme';
  */
 export default function Temas() {
   return (
-    <Screen edges={['top', 'bottom']} footer={<HelpLink />}>
-      <BackBar />
+    <Screen edges={['top', 'bottom']}>
+      <BackBar right={<HelpButton />} />
       <View style={styles.intro}>
         <AppText variant="h1">Quer pensar sobre alguma coisa?</AppText>
         <AppText variant="body" color="textBody">

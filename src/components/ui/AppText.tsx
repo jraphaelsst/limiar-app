@@ -10,12 +10,21 @@ type Props = TextProps & {
   ref?: Ref<Text>;
 };
 
+/**
+ * Display, heading and button text scale with the system font up to 2x (WCAG 1.4.4's 200%), not without
+ * limit: at the largest iOS size (~3.1x) serif titles broke mid-word and filled the first screen
+ * (simulator sweep 2026-10-05). Body text, labels and captions keep scaling fully.
+ */
+const CAPPED: ReadonlySet<TypographyVariant> = new Set<TypographyVariant>(['display', 'h1', 'h2', 'h3', 'cardTitle', 'button']);
+export const HEADING_MAX_FONT_SCALE = 2;
+
 /** The only text primitive. Typography and color always come from tokens. */
 export function AppText({ variant = 'body', color = 'text', style, ...rest }: Props) {
   const isHeading = variant === 'display' || variant === 'h1' || variant === 'h2' || variant === 'h3';
   return (
     <Text
       accessibilityRole={isHeading ? 'header' : rest.accessibilityRole}
+      maxFontSizeMultiplier={CAPPED.has(variant) ? HEADING_MAX_FONT_SCALE : undefined}
       {...rest}
       style={[typography[variant], { color: palette[color] }, style]}
     />

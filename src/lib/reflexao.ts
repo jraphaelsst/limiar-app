@@ -3,26 +3,25 @@
  * One card at a time; at most two choices at the end of each (spec §20).
  */
 
-/** The two ways forward from a card. On the last card "Quero pensar mais" becomes "Escolher outro tema". */
-export type ReflectionChoice = 'pensar-mais' | 'outro-tema' | 'fazer-algo';
+/**
+ * The way forward from a card: "Quero pensar mais" while the theme has more cards, "Escolher outro tema"
+ * on the last one. "Prefiro fazer algo agora" was removed (João 2026-10-05): the back arrow and the tabs
+ * already lead out, and one clear action reads better than a stack of links.
+ */
+export type ReflectionChoice = 'pensar-mais' | 'outro-tema';
 
 export const choiceLabel: Record<ReflectionChoice, string> = {
   'pensar-mais': 'Quero pensar mais',
   'outro-tema': 'Escolher outro tema',
-  'fazer-algo': 'Prefiro fazer algo agora',
 };
 
 export function isLastCard(index: number, total: number): boolean {
   return index >= total - 1;
 }
 
-/**
- * Exactly two, never more (spec §20 "no máximo 2 próximos caminhos"). While the theme has more
- * cards, the main one is "Quero pensar mais"; on the last card the main one is "Prefiro fazer algo
- * agora" (spec §2 "movimento antes de ruminação") and the other is "Escolher outro tema".
- */
-export function choicesFor(index: number, total: number): { primary: ReflectionChoice; secondary: ReflectionChoice } {
-  return isLastCard(index, total) ? { primary: 'fazer-algo', secondary: 'outro-tema' } : { primary: 'pensar-mais', secondary: 'fazer-algo' };
+/** One action per card (spec §20 allows at most two next paths). */
+export function choiceFor(index: number, total: number): ReflectionChoice {
+  return isLastCard(index, total) ? 'outro-tema' : 'pensar-mais';
 }
 
 /** "Quero pensar mais": the next card of the same theme (never past the last). */

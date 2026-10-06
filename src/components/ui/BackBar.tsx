@@ -7,13 +7,17 @@ import { space } from '@/theme';
 import { IconButton } from './IconButton';
 import { ArrowLeft } from './icons';
 
-/** Header for pushed screens: back on the left, up to two actions on the right. */
-export function BackBar({ right }: { right?: ReactNode }) {
+/**
+ * Header for pushed screens: back on the left, up to two actions on the right. The back arrow is the
+ * same as the system back (a screen with steps turns it into "previous step" via usePreviousStepOnBack),
+ * so `backLabel` only renames it for the screen reader when that is what it does.
+ */
+export function BackBar({ right, backLabel = 'Voltar' }: { right?: ReactNode; backLabel?: string }) {
   return (
     <View style={styles.row}>
       <IconButton
         icon={ArrowLeft}
-        label="Voltar"
+        label={backLabel}
         onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
       />
       <View style={styles.right}>{right}</View>

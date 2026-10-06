@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, type Text } from 'react-native';
 
 import { useReflectionBookmark } from '@/components/Bookmark';
-import { HelpLink } from '@/components/HelpLink';
+import { HelpButton } from '@/components/HelpButton';
 import { AppText, BackBar, Button, CheckItem, Chip, Screen } from '@/components/ui';
 import { findTheme, reflectionsFor, type Reflection, type Theme } from '@/data/reflexoes';
 import { useFocusOnChange } from '@/lib/a11y';
@@ -11,7 +11,7 @@ import {
   backGoesToPreviousCard,
   cardLabel,
   choiceLabel,
-  choicesFor,
+  choiceFor,
   nextCard,
   previousCard,
   startIndex,
@@ -31,7 +31,7 @@ export default function ReflexaoRoute() {
 /**
  * Screen 14 "Pergunta aberta — reflexão" (spec §19, §4.7), wave 2 without typing: ONE curated card
  * at a time — a short acknowledgement + two lentes to think about on paper or in her head — then at
- * most two choices (spec §20). Nothing is typed, sent or stored except, if she taps the bookmark,
+ * one action (João 2026-10-05; spec §20 allows at most two). Nothing is typed, sent or stored except, if she taps the bookmark,
  * the card's id. Back after the card she opened goes to the previous card (decision 2026-10-03, one
  * mechanism app-wide: usePreviousStepOnBack).
  */
@@ -68,23 +68,24 @@ function Cards({ theme, cards, start }: { theme: Theme; cards: readonly Reflecti
     if (indexRef.current !== index) return; // stale double tap
     if (c === 'pensar-mais') go(nextCard(index, total));
     // Back to screen 13, or opens it in place of this one when she came from Salvos.
-    else if (c === 'outro-tema') setLeave(() => () => router.dismissTo('/reflexao'));
-    else router.push('/sofa');
+    else setLeave(() => () => router.dismissTo('/reflexao'));
   };
 
-  const { primary, secondary } = choicesFor(index, total);
+  const choice = choiceFor(index, total);
   return (
     <Screen
       key={`card-${index}`}
       edges={['top', 'bottom']}
-      footer={
-        <View style={styles.actions}>
-          <Button label={choiceLabel[primary]} arrow fullWidth onPress={() => choose(primary)} />
-          <Button variant="quiet" label={choiceLabel[secondary]} onPress={() => choose(secondary)} />
-          <HelpLink />
-        </View>
-      }>
-      <BackBar right={bookmark.button} />
+      footer={<Button label={choiceLabel[choice]} arrow fullWidth onPress={() => choose(choice)} />}>
+      {/* Help: the lifebuoy at the top, as on the other screens (João 2026-10-05 removed the long link). */}
+      <BackBar
+        right={
+          <>
+            {bookmark.button}
+            <HelpButton />
+          </>
+        }
+      />
       {bookmark.error}
       <View style={styles.block}>
         <Chip label={theme.label} tone="sand" />
@@ -125,5 +126,4 @@ function ThemeNotFound() {
 const styles = StyleSheet.create({
   block: { gap: space[3] },
   lentes: { gap: space[3], backgroundColor: color.tintWarm, borderRadius: radius.tile, padding: space[4] },
-  actions: { gap: space[1], alignItems: 'center' },
 });
